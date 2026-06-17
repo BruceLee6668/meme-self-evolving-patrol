@@ -1,0 +1,62 @@
+{
+  "name": "自我进化轮巡",
+  "version": "0.1.0-free-sources",
+  "s0_anchor": {
+    "jst": "2026-06-16T16:15:17+09:00",
+    "beijing": "2026-06-16T15:15:17+08:00",
+    "utc": "2026-06-16T07:15:17Z",
+    "type": "timestamp_anchor_only"
+  },
+  "scan_scope": {
+    "chains": ["bsc", "solana"],
+    "include_sources": ["dexscreener", "geckoterminal"],
+    "include_segments": ["four.meme", "pump.fun", "pumpswap", "pancakeswap", "raydium", "meteora"]
+  },
+  "thresholds": {
+    "min_lp_main_usd": 100000,
+    "max_24h_change_bottom_pct": 80,
+    "young_token_hours": 6,
+    "young_token_pump_pct": 100,
+    "pvp_volume_lp_warning": 8,
+    "pvp_volume_lp_exclude": 20,
+    "min_volume_24h_usd": 50000,
+    "max_candidates": 25
+  },
+  "smart_money": {
+    "ave_refresh_frequency": "weekly",
+    "ave_cache_valid_days": 7,
+    "hourly_use": ["ave_weekly_cache", "local_wallet_score", "proxy_metrics"],
+    "allow_emergency_refresh_suggestion": true,
+    "emergency_refresh_conditions": {
+      "min_lp_usd": 100000,
+      "near_bottom_required": true,
+      "net_buy_expanding_required": true,
+      "independent_large_wallets_required": true,
+      "exclude_pvp_pool": true
+    }
+  },
+  "scoring_weights": {
+    "liquidity": 20,
+    "bottom_structure": 20,
+    "volume_quality": 20,
+    "pvp_risk_penalty": 20,
+    "smart_money_proxy": 20
+  },
+  "output_format": {
+    "require_previous_result_table": true,
+    "require_current_result_table": true,
+    "require_previous_logic_summary": true,
+    "require_current_logic_summary": true,
+    "require_optimization_table": true,
+    "require_mining_strategy_tuning_table": true,
+    "require_strategy_writeback_status": true
+  },
+  "strategy_notes": [
+    "Do not treat positive Net Buys as Smart Money accumulation without wallet-level confirmation.",
+    "If wallet-level data is unavailable, confidence is capped at medium/low.",
+    "PVP tokens must be separated from the main bottom-accumulation watchlist.",
+    "AVE Smart Money should be refreshed weekly, not hourly."
+  ],
+  "last_updated_by": "initial_bootstrap",
+  "last_updated_at": null
+}
