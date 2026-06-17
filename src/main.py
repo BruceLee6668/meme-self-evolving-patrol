@@ -5,8 +5,10 @@ from pathlib import Path
 from typing import Any, Dict
 
 from .free_scan import scan_free_sources
+from .chain_verify import verify_candidates
 from .report_writer import build_report
 from .self_evolver import evaluate_strategy_patch
+from .smart_wallet_cache import load_smart_wallet_cache, write_smart_wallet_cache
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config" / "strategy_config.json"
@@ -15,6 +17,8 @@ LATEST_SNAPSHOT = OUTPUT_DIR / "latest_snapshot.json"
 PREVIOUS_SNAPSHOT = OUTPUT_DIR / "previous_snapshot.json"
 LATEST_REPORT = OUTPUT_DIR / "latest_report.md"
 STRATEGY_PATCH = OUTPUT_DIR / "strategy_patch.json"
+CHAIN_VERIFY_LATEST = OUTPUT_DIR / "chain_verify_latest.json"
+SMART_WALLET_CACHE = OUTPUT_DIR / "smart_wallet_cache.json"
 HISTORY_DIR = OUTPUT_DIR / "history"
 
 
@@ -43,8 +47,36 @@ def main() -> None:
     write_json(PREVIOUS_SNAPSHOT, previous)
 
     snapshot = scan_free_sources(strategy)
+
+    # v0.4: read weekly AVE smart-wallet cache and add chain-address preflight.
+    valid_days = int((strategy.get("smart_money") or {}).get("ave_cache_valid_days", 7))
+    smart_cache = load_smart_wallet_cache(SMART_WALLET_CACHE, valid_days=valid_days)
+    # v0.4.1: always persist/refresh the cache file, even when AVE is not configured.
+    # This guarantees output/smart_wallet_cache.json exists for downstream readers.
+    write_smart_wallet_cache(SMART_WALLET_CACHE, smart_cache)
+    snapshot["smart_wallet_cache_status"] = {
+        "status": smart_cache.get("status"),
+        "wallet_count": smart_cache.get("wallet_count"),
+        "last_refresh_at": smart_cache.get("last_refresh_at"),
+        "age_days": smart_cache.get("age_days"),
+        "is_stale": smart_cache.get("is_stale"),
+        "valid_days": smart_cache.get("valid_days"),
+    }
+    for c in snapshot.get("candidates", []):
+        if smart_cache.get("status") == "active":
+            c["smart_money_source_status"] = "ave_weekly_cache_available_plus_proxy"
+            c["smart_money_judgment"] = str(c.get("smart_money_judgment", "")) + "；AVE周缓存可用，等待链上钱包映射"
+        elif smart_cache.get("status") == "stale":
+            c["smart_money_source_status"] = "ave_weekly_cache_stale_plus_proxy"
+            c["smart_money_judgment"] = str(c.get("smart_money_judgment", "")) + "；AVE周缓存过期，不作高置信依据"
+        else:
+            c["smart_money_source_status"] = "proxy_only_no_ave_cache"
+
+    chain_verify = verify_candidates(snapshot, strategy)
+    snapshot["chain_verify"] = {k: v for k, v in chain_verify.items() if k != "results"}
     patch = evaluate_strategy_patch(snapshot, previous, strategy)
 
+    write_json(CHAIN_VERIFY_LATEST, chain_verify)
     write_json(LATEST_SNAPSHOT, snapshot)
     write_json(STRATEGY_PATCH, patch)
 

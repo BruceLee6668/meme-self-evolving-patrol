@@ -7,7 +7,7 @@ from typing import Any, Dict
 def evaluate_strategy_patch(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: Dict[str, Any]) -> Dict[str, Any]:
     """Conservative strategy patcher.
 
-    v0.3 focuses on output/actionability quality: contract address visibility, liquidity tier separation, visible PVP/mature detail tables, and chain-verification flags. It avoids aggressive numeric threshold changes until several runs confirm direction.
+    v0.4.1 focuses on output persistence and actionability quality: contract address visibility, liquidity tier separation, visible PVP/mature detail tables, and chain-verification flags. It avoids aggressive numeric threshold changes until several runs confirm direction.
     """
     candidates = snapshot.get("candidates", [])
     summary = snapshot.get("summary", {})
@@ -53,7 +53,7 @@ def evaluate_strategy_patch(snapshot: Dict[str, Any], previous: Dict[str, Any], 
             "field": "chain_verify_pipeline",
             "old_value": "not_visible",
             "new_value": "needs_chain_verify_flag_plus_reason",
-            "reason": "观察池候选需要链上Swap、钱包留存和大额买卖确认；v0.3已生成确认标记",
+            "reason": "观察池候选需要链上Swap、钱包留存和大额买卖确认；v0.4.1已生成确认标记并强制落地chain_verify_latest.json",
             "impact": "下轮报告继续输出链上确认/紧急精查表，为接BSC RPC/Helius做准备",
             "writeback_type": "logical_confirmation_only",
         })

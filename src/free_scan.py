@@ -15,7 +15,7 @@ CHAIN_MAP = {
     "solana": {"dex": "solana", "gecko": "solana", "label": "SOL"},
 }
 
-# v0.3: adds contract-address first output, liquidity tiers, visible PVP/mature detail support, and chain-verify flags.
+# v0.4: keeps v0.3 output and adds chain preflight + Smart Wallet weekly-cache integration in main.py.
 SEARCH_QUERIES = [
     "four meme bsc",
     "four.meme",
@@ -796,11 +796,11 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         "summary": summary,
         "candidates": candidates,
         "data_limitations": [
-            "This v0.3 scan uses free public sources only.",
-            "AVE Smart Money weekly cache is not connected yet.",
+            "This v0.4 scan uses free public sources plus lightweight chain address/account preflight when enabled.",
+            "AVE Smart Money weekly cache structure is connected; real AVE API refresh is handled by the weekly workflow/cache file.",
             "S0 exact historical replay is not implemented yet; candidates are marked with current metrics only.",
-            "Wallet-level buy/sell retention is not implemented yet.",
-            "v0.3 adds contract-address output, liquidity tiers, visible PVP/mature detail tables, and chain-verify flags.",
+            "Wallet-level buy/sell retention is not implemented yet; v0.4 only preflights token contract/account existence.",
+            "v0.4 adds chain preflight status and Smart Wallet cache status on top of contract-address output, liquidity tiers, visible PVP/mature detail tables, and chain-verify flags.",
             "Contract addresses are extracted from DEXScreener baseToken or GeckoTerminal relationships when available; missing addresses are explicitly marked unavailable.",
         ],
     }

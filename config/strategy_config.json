@@ -1,6 +1,6 @@
 {
   "name": "自我进化轮巡",
-  "version": "0.4.0-chain-preflight-smart-wallet-cache",
+  "version": "0.4.1-output-persistence-fix",
   "s0_anchor": {
     "jst": "2026-06-16T16:15:17+09:00",
     "beijing": "2026-06-16T15:15:17+08:00",
@@ -161,5 +161,11 @@
       "v0.4 verifies BSC contract code and SOL token/account existence only.",
       "v0.5 should parse Swap direction, large buyer wallets, holding retention, and sell-route transfers."
     ]
-  }
+  },
+  "release_notes": [
+    "v0.4.1 fixes output persistence for chain_verify_latest.json and smart_wallet_cache.json.",
+    "Hourly patrol now always bootstraps and writes smart wallet cache even when AVE is not configured.",
+    "Workflow uses git add -A output config to avoid missing new files caused by pathspec issues.",
+    "Report limitation text updated to v0.4.1 current state."
+  ]
 }
