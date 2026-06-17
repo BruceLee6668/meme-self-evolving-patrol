@@ -1,0 +1,49 @@
+name: AVE Smart Wallet 周缓存刷新
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 1"
+
+permissions:
+  contents: write
+
+jobs:
+  ave_refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Refresh AVE smart wallet cache
+        env:
+          AVE_API_KEY: ${{ secrets.AVE_API_KEY }}
+          AVE_SMART_WALLET_ENDPOINT_TEMPLATE: ${{ secrets.AVE_SMART_WALLET_ENDPOINT_TEMPLATE }}
+          AVE_AUTH_HEADER: ${{ secrets.AVE_AUTH_HEADER }}
+          AVE_TARGET_LIMIT: ${{ vars.AVE_TARGET_LIMIT }}
+          AVE_REFRESH_SCOPE: ${{ vars.AVE_REFRESH_SCOPE }}
+        run: |
+          python -m src.ave_weekly_refresh
+
+      - name: Commit updated AVE cache
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A output/smart_wallet_cache.json output/ave_raw_smart_money.json config || true
+          if git diff --cached --quiet; then
+            echo "No AVE cache changes to commit."
+          else
+            git commit -m "refresh AVE smart wallet cache"
+            git push
+          fi
