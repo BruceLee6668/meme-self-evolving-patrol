@@ -1,4 +1,47 @@
 {
-  "has_patch": false,
-  "summary": "waiting_for_first_v0_1_run"
+  "has_patch": true,
+  "patches": [
+    {
+      "field": "chain_verify_pipeline",
+      "old_value": "not_visible",
+      "new_value": "needs_chain_verify_flag_plus_reason",
+      "reason": "观察池候选需要链上Swap、钱包留存和大额买卖确认；v0.4.1已生成确认标记并强制落地chain_verify_latest.json",
+      "impact": "下轮报告继续输出链上确认/紧急精查表，为接BSC RPC/Helius做准备",
+      "writeback_type": "logical_confirmation_only"
+    },
+    {
+      "field": "emergency_precision_check_policy",
+      "old_value": "not_available",
+      "new_value": "flag_high_priority_candidates_for_manual_or_api_deep_check",
+      "reason": "本轮出现满足LP、低波动、买盘占优、非多池冲突的高优先候选",
+      "impact": "下轮这类候选优先进入链上精查或AVE单币紧急刷新建议",
+      "writeback_type": "logical_confirmation_only"
+    },
+    {
+      "field": "early_alpha_range_filter",
+      "old_value": "not_strict_enough",
+      "new_value": "mature_pool_separation",
+      "reason": "检测到成熟池候选，不能让大池成熟资产占用早期Alpha主榜",
+      "impact": "成熟大池进入成熟池观察，不作为底部MEME扫货主观察",
+      "writeback_type": "logical_confirmation_only"
+    },
+    {
+      "field": "multi_pool_conflict_policy",
+      "old_value": "confidence_downgrade",
+      "new_value": "confidence_downgrade_plus_representative_largest_lp_pool",
+      "reason": "本轮存在多池数据冲突，不能用单池数据给高置信判断",
+      "impact": "多池价格/LP冲突的币降置信度，不直接升级主观察",
+      "writeback_type": "logical_confirmation_only"
+    },
+    {
+      "field": "symbol_bridge_merge_policy",
+      "old_value": "address_only_or_gecko_symbol_fallback",
+      "new_value": "bridge_gecko_only_rows_to_dex_rows_when_symbol_is_non_ambiguous",
+      "reason": "本轮存在symbol桥接合并，说明重复输出问题正在被修正",
+      "impact": "减少同一Token在主观察/次观察中重复出现",
+      "writeback_type": "logical_confirmation_only"
+    }
+  ],
+  "summary": "本轮确认结构性规则：合约地址强制展示、LP层级分离、PVP/成熟池明细、链上确认标记、早期Alpha过滤、多池冲突降置信",
+  "evaluated_at": "2026-06-17T17:27:08.914295Z"
 }
