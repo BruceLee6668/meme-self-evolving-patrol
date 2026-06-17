@@ -1,6 +1,6 @@
 {
   "name": "自我进化轮巡",
-  "version": "0.3.0-contract-address-tier-detail",
+  "version": "0.4.0-chain-preflight-smart-wallet-cache",
   "s0_anchor": {
     "jst": "2026-06-16T16:15:17+09:00",
     "beijing": "2026-06-16T15:15:17+08:00",
@@ -14,7 +14,10 @@
     ],
     "include_sources": [
       "dexscreener",
-      "geckoterminal"
+      "geckoterminal",
+      "bsc_rpc_preflight",
+      "solana_rpc_preflight",
+      "ave_weekly_cache"
     ],
     "include_segments": [
       "four.meme",
@@ -66,7 +69,27 @@
       "net_buy_expanding_required": true,
       "independent_large_wallets_required": true,
       "exclude_pvp_pool": true
-    }
+    },
+    "cache_file": "output/smart_wallet_cache.json",
+    "weekly_workflow": ".github/workflows/weekly_ave_refresh.yml",
+    "persist_wallet_fields": [
+      "wallet_address",
+      "chain",
+      "labels",
+      "profile",
+      "source",
+      "confidence",
+      "first_seen_at",
+      "last_refresh_at",
+      "last_seen_at",
+      "related_tokens",
+      "risk_flags",
+      "status"
+    ],
+    "do_not_delete_missing_wallets": true,
+    "mark_missing_or_old_labels_as": "stale_or_expired",
+    "hourly_identity_source": "AVE_weekly_cache",
+    "hourly_behavior_source": "chain_or_dex_current_events"
   },
   "scoring_weights": {
     "liquidity": 22,
@@ -91,7 +114,11 @@
     "visible_pvp_detail_table": true,
     "visible_mature_detail_table": true,
     "chain_verify_flags": true,
-    "emergency_precision_check_flag": true
+    "emergency_precision_check_flag": true,
+    "onchain_address_preflight": true,
+    "smart_wallet_cache_persistence": true,
+    "weekly_ave_refresh_workflow": true,
+    "do_not_hourly_refresh_ave_smart_money": true
   },
   "output_format": {
     "require_previous_result_table": true,
@@ -114,8 +141,25 @@
     "v0.2 keeps a visible PVP risk pool in output so high-noise tokens are monitored separately rather than silently dropped.",
     "v0.3 makes contract address a required output field; if unavailable, mark it explicitly rather than hiding it.",
     "v0.3 adds liquidity tiers: Micro / Early / Liquid / Mature, so candidates at different maturity stages are not mixed blindly.",
-    "v0.3 adds visible PVP and mature-pool detail tables, plus needs_chain_verify and emergency_precision_check flags for the next on-chain verification phase."
+    "v0.3 adds visible PVP and mature-pool detail tables, plus needs_chain_verify and emergency_precision_check flags for the next on-chain verification phase.",
+    "v0.4 adds BSC/SOL address/account preflight for candidates that need chain verification.",
+    "v0.4 adds persistent Smart Wallet Cache structure. AVE Smart Money calls should save wallet addresses, labels, confidence, related tokens and status to output/smart_wallet_cache.json.",
+    "v0.4 separates weekly AVE wallet identity refresh from hourly current wallet behavior tracking.",
+    "Wallet identities missing from a new AVE refresh should not be blindly deleted; mark stale/expired instead."
   ],
-  "last_updated_by": "assistant_v0.3_contract_tier_detail",
-  "last_updated_at": null
+  "last_updated_by": "assistant_v0.4_chain_preflight_smart_wallet_cache",
+  "last_updated_at": null,
+  "chain_verify": {
+    "enabled": true,
+    "level": "address_preflight_v0.4",
+    "max_candidates_per_run": 12,
+    "bsc_rpc_url": "https://bsc-dataseed.binance.org/",
+    "solana_rpc_url_note": "Use HELIUS_API_KEY secret if available; otherwise public Solana RPC fallback.",
+    "parse_swap_retention": false,
+    "parse_wallet_router_cex_transfer": false,
+    "notes": [
+      "v0.4 verifies BSC contract code and SOL token/account existence only.",
+      "v0.5 should parse Swap direction, large buyer wallets, holding retention, and sell-route transfers."
+    ]
+  }
 }
