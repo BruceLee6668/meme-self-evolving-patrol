@@ -15,7 +15,7 @@ CHAIN_MAP = {
     "solana": {"dex": "solana", "gecko": "solana", "label": "SOL"},
 }
 
-# v0.2: still broad discovery, then stricter early-alpha / PVP / maturity separation.
+# v0.3: adds contract-address first output, liquidity tiers, visible PVP/mature detail support, and chain-verify flags.
 SEARCH_QUERIES = [
     "four meme bsc",
     "four.meme",
@@ -83,6 +83,102 @@ def _norm_symbol(v: Any) -> str:
     return s or "UNKNOWN"
 
 
+
+
+def _extract_gecko_token_address(pool: Dict[str, Any], network: str) -> Tuple[Optional[str], str]:
+    """Best-effort token address extraction for GeckoTerminal pool payloads.
+
+    GeckoTerminal pool objects usually expose base token through relationships such as
+    data.id = "bsc_0x..." or "solana_<mint>". If the relationship is absent, keep it
+    unavailable rather than inventing a contract address.
+    """
+    relationships = pool.get("relationships") or {}
+    base = relationships.get("base_token") or {}
+    data = base.get("data") or {}
+    raw_id = str(data.get("id") or "").strip()
+    if raw_id:
+        prefix = f"{network}_"
+        if raw_id.startswith(prefix):
+            return raw_id[len(prefix):], "geckoterminal_relationship"
+        if "_" in raw_id:
+            return raw_id.split("_", 1)[1], "geckoterminal_relationship"
+        return raw_id, "geckoterminal_relationship"
+    return None, "unavailable"
+
+
+def _contract_url(chain: Any, address: Any) -> Optional[str]:
+    addr = str(address or "").strip()
+    if not addr:
+        return None
+    if chain == "bsc":
+        return f"https://bscscan.com/token/{addr}"
+    if chain == "solana":
+        return f"https://solscan.io/token/{addr}"
+    return None
+
+
+def _short_address(address: Any) -> str:
+    addr = str(address or "").strip()
+    if not addr:
+        return "不可用"
+    if len(addr) <= 14:
+        return addr
+    return f"{addr[:6]}...{addr[-6:]}"
+
+
+def _liquidity_tier(lp: Any, strategy: Dict[str, Any]) -> str:
+    th = strategy.get("thresholds", {})
+    lpv = _safe_float(lp)
+    micro_max = _safe_float(th.get("liquidity_tier_micro_max_usd"), 100_000)
+    early_max = _safe_float(th.get("liquidity_tier_early_max_usd"), 750_000)
+    liquid_max = _safe_float(th.get("liquidity_tier_liquid_max_usd"), 5_000_000)
+    if lpv <= 0:
+        return "Unknown"
+    if lpv < micro_max:
+        return "Micro"
+    if lpv < early_max:
+        return "Early"
+    if lpv < liquid_max:
+        return "Liquid"
+    return "Mature"
+
+
+def _needs_chain_verify(c: Dict[str, Any]) -> Tuple[bool, str, bool]:
+    """Return (needs_chain_verify, reason, emergency_precision_check)."""
+    status = c.get("classification")
+    lp = _safe_float(c.get("liquidity_usd"))
+    vol = _safe_float(c.get("volume_24h_usd"))
+    ratio = c.get("volume_lp_ratio")
+    chg24 = abs(_safe_float(c.get("price_change_24h_pct")))
+    buys = _safe_int(c.get("buys_24h"))
+    sells = _safe_int(c.get("sells_24h"))
+    has_addr = bool(c.get("token_address"))
+
+    reasons = []
+    if status in {"主观察", "次观察"}:
+        reasons.append("观察池候选需要链上Swap/钱包留存确认")
+    if not has_addr:
+        reasons.append("缺少合约地址，需补地址后才能链上确认")
+    if c.get("multi_pool_conflict"):
+        reasons.append("多池数据冲突，需链上/聚合源复核")
+    if status == "PVP风险池":
+        reasons.append("PVP候选仅记录，非紧急精查")
+
+    emergency = (
+        status == "主观察"
+        and has_addr
+        and lp >= 100_000
+        and vol >= 50_000
+        and chg24 <= 25
+        and (ratio is None or _safe_float(ratio) <= 8)
+        and buys > sells
+        and not c.get("multi_pool_conflict")
+    )
+    if emergency:
+        reasons.append("满足紧急精查候选：LP合格、低波动、买盘占优、非多池冲突")
+    return bool(reasons), "；".join(reasons) if reasons else "暂不需要", emergency
+
+
 def _token_identity(c: Dict[str, Any]) -> str:
     chain = c.get("chain") or "unknown"
     addr = _norm_address(c.get("token_address"))
@@ -145,6 +241,9 @@ def normalize_dex_pair(pair: Dict[str, Any], source: str = "dexscreener") -> Opt
         "token_symbol_norm": symbol_norm,
         "token_name": token_name,
         "token_address": token_address,
+        "contract_address": token_address,
+        "contract_address_source": "dexscreener_base_token" if token_address else "unavailable",
+        "contract_url": _contract_url(chain, token_address),
         "pair_address": pair_address,
         "quote_symbol": quote_symbol,
         "url": pair.get("url"),
@@ -184,6 +283,8 @@ def normalize_gecko_pool(pool: Dict[str, Any], network: str) -> Optional[Dict[st
     sells_24h = _safe_int(((tx_count.get("h24") or {}).get("sells")))
     volume_24h = _safe_float(volume_usd.get("h24"))
 
+    token_address, token_address_source = _extract_gecko_token_address(pool, network)
+
     return {
         "source": "geckoterminal",
         "chain": network,
@@ -192,7 +293,10 @@ def normalize_gecko_pool(pool: Dict[str, Any], network: str) -> Optional[Dict[st
         "token": token_symbol,
         "token_symbol_norm": _norm_symbol(token_symbol),
         "token_name": name,
-        "token_address": None,
+        "token_address": token_address,
+        "contract_address": token_address,
+        "contract_address_source": token_address_source,
+        "contract_url": _contract_url(network, token_address),
         "pair_address": address,
         "quote_symbol": None,
         "url": None,
@@ -449,6 +553,19 @@ def merge_multi_pool_candidates(candidates: Iterable[Dict[str, Any]]) -> List[Di
             reverse=True,
         )[0].copy()
 
+        # v0.3: contract address is first-class output. If the representative
+        # pool lacks it but another merged row has it, copy the best available one.
+        address_items = [i for i in items if i.get("token_address")]
+        if address_items and not best.get("token_address"):
+            addr_src_item = sorted(address_items, key=lambda x: (_safe_float(x.get("liquidity_usd")), _safe_float(x.get("volume_24h_usd"))), reverse=True)[0]
+            best["token_address"] = addr_src_item.get("token_address")
+            best["contract_address"] = addr_src_item.get("token_address")
+            best["contract_address_source"] = addr_src_item.get("contract_address_source")
+            best["contract_url"] = _contract_url(best.get("chain"), best.get("token_address"))
+        else:
+            best["contract_address"] = best.get("token_address")
+            best["contract_url"] = _contract_url(best.get("chain"), best.get("token_address"))
+
         pool_count = len(items)
         sources = sorted(set(str(i.get("source")) for i in items if i.get("source")))
         dexes = sorted(set(str(i.get("dex_id")) for i in items if i.get("dex_id")))
@@ -465,11 +582,15 @@ def merge_multi_pool_candidates(candidates: Iterable[Dict[str, Any]]) -> List[Di
         best["aggregate_volume_24h_usd"] = total_vol
         best["multi_pool_price_spread_pct"] = _round_or_none(price_spread_pct, 2)
         best["symbol_bridge_merged"] = any(i.get("symbol_bridge_merged") for i in items)
+        best["token_addresses"] = sorted(set(str(i.get("token_address")) for i in items if i.get("token_address")))
+        best["address_available"] = bool(best.get("token_address"))
         best["top_pools"] = [
             {
                 "source": i.get("source"),
                 "dex_id": i.get("dex_id"),
                 "pair_address": i.get("pair_address"),
+                "token_address": i.get("token_address"),
+                "contract_address_source": i.get("contract_address_source"),
                 "liquidity_usd": _round_or_none(i.get("liquidity_usd"), 2),
                 "volume_24h_usd": _round_or_none(i.get("volume_24h_usd"), 2),
                 "price_usd": i.get("price_usd"),
@@ -503,6 +624,7 @@ def build_candidate_notes(c: Dict[str, Any]) -> None:
     status = c.get("classification")
     c["smart_money_judgment"] = "钱包级数据不可用；当前仅代理指标"
     c["smart_money_source"] = "proxy_metrics_only"
+    c["smart_money_source_status"] = "proxy_only_ave_weekly_cache_not_connected"
 
     if c.get("multi_pool_conflict"):
         c["confidence"] = "Low"
@@ -618,6 +740,11 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         c["risk_flags"] = flags
         c["volume_lp_ratio"] = _round_or_none(c.get("volume_lp_ratio"), 4)
         c["age_hours"] = _round_or_none(c.get("age_hours"), 2)
+        c["liquidity_tier"] = _liquidity_tier(c.get("liquidity_usd"), strategy)
+        needs_verify, verify_reason, emergency_check = _needs_chain_verify(c)
+        c["needs_chain_verify"] = needs_verify
+        c["chain_verify_reason"] = verify_reason
+        c["emergency_precision_check"] = emergency_check
         build_candidate_notes(c)
 
     # Cap main watchlist first, then preserve a visible PVP pool in output.
@@ -650,6 +777,14 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         "multi_pool_count": sum(1 for c in candidates if c.get("pool_count", 1) > 1),
         "multi_pool_conflict_count": sum(1 for c in candidates if c.get("multi_pool_conflict")),
         "symbol_bridge_merge_count": sum(1 for c in candidates if c.get("symbol_bridge_merged")),
+        "contract_address_available_count": sum(1 for c in candidates if c.get("token_address")),
+        "contract_address_missing_count": sum(1 for c in candidates if not c.get("token_address")),
+        "micro_tier_count": sum(1 for c in candidates if c.get("liquidity_tier") == "Micro"),
+        "early_tier_count": sum(1 for c in candidates if c.get("liquidity_tier") == "Early"),
+        "liquid_tier_count": sum(1 for c in candidates if c.get("liquidity_tier") == "Liquid"),
+        "mature_tier_count": sum(1 for c in candidates if c.get("liquidity_tier") == "Mature"),
+        "needs_chain_verify_count": sum(1 for c in candidates if c.get("needs_chain_verify")),
+        "emergency_precision_check_count": sum(1 for c in candidates if c.get("emergency_precision_check")),
     }
 
     return {
@@ -661,11 +796,11 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         "summary": summary,
         "candidates": candidates,
         "data_limitations": [
-            "This v0.2 scan uses free public sources only.",
+            "This v0.3 scan uses free public sources only.",
             "AVE Smart Money weekly cache is not connected yet.",
             "S0 exact historical replay is not implemented yet; candidates are marked with current metrics only.",
             "Wallet-level buy/sell retention is not implemented yet.",
-            "v0.2 adds early-alpha range filters; mature/liquid assets are separated from main early-alpha watchlist.",
-            "Symbol bridge merging reduces Gecko-only duplicates but may still be approximate for ambiguous tickers.",
+            "v0.3 adds contract-address output, liquidity tiers, visible PVP/mature detail tables, and chain-verify flags.",
+            "Contract addresses are extracted from DEXScreener baseToken or GeckoTerminal relationships when available; missing addresses are explicitly marked unavailable.",
         ],
     }

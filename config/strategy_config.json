@@ -1,6 +1,6 @@
 {
   "name": "自我进化轮巡",
-  "version": "0.2.0-alpha-range-dedupe-pvp",
+  "version": "0.3.0-contract-address-tier-detail",
   "s0_anchor": {
     "jst": "2026-06-16T16:15:17+09:00",
     "beijing": "2026-06-16T15:15:17+08:00",
@@ -46,7 +46,10 @@
     "boost_expand_limit": 25,
     "search_pair_limit_per_query": 15,
     "pvp_keep_limit": 8,
-    "min_pvp_volume_usd": 30000
+    "min_pvp_volume_usd": 30000,
+    "liquidity_tier_micro_max_usd": 100000,
+    "liquidity_tier_early_max_usd": 750000,
+    "liquidity_tier_liquid_max_usd": 5000000
   },
   "smart_money": {
     "ave_refresh_frequency": "weekly",
@@ -81,7 +84,14 @@
     "early_alpha_range_filter": true,
     "symbol_bridge_merge_for_gecko_only": true,
     "include_pvp_risk_pool_in_output": true,
-    "mature_pool_separation": true
+    "mature_pool_separation": true,
+    "contract_address_required_in_output": true,
+    "contract_address_links": true,
+    "liquidity_tier_separation": true,
+    "visible_pvp_detail_table": true,
+    "visible_mature_detail_table": true,
+    "chain_verify_flags": true,
+    "emergency_precision_check_flag": true
   },
   "output_format": {
     "require_previous_result_table": true,
@@ -101,8 +111,11 @@
     "Multi-pool tokens must be merged or marked as conflicting before judgment.",
     "v0.2 adds early-alpha range filters so very mature / very large LP tokens do not occupy main watchlist.",
     "v0.2 strengthens symbol-bridge merge between Gecko-only rows and DEXScreener token-address rows to reduce duplicate Token output.",
-    "v0.2 keeps a visible PVP risk pool in output so high-noise tokens are monitored separately rather than silently dropped."
+    "v0.2 keeps a visible PVP risk pool in output so high-noise tokens are monitored separately rather than silently dropped.",
+    "v0.3 makes contract address a required output field; if unavailable, mark it explicitly rather than hiding it.",
+    "v0.3 adds liquidity tiers: Micro / Early / Liquid / Mature, so candidates at different maturity stages are not mixed blindly.",
+    "v0.3 adds visible PVP and mature-pool detail tables, plus needs_chain_verify and emergency_precision_check flags for the next on-chain verification phase."
   ],
-  "last_updated_by": "assistant_v0.2_alpha_filter",
+  "last_updated_by": "assistant_v0.3_contract_tier_detail",
   "last_updated_at": null
 }

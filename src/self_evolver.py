@@ -7,9 +7,7 @@ from typing import Any, Dict
 def evaluate_strategy_patch(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: Dict[str, Any]) -> Dict[str, Any]:
     """Conservative strategy patcher.
 
-    v0.2 focuses on structural quality: early-alpha range filtering, stronger
-    duplicate merging, visible PVP pool, and mature-pool separation. It avoids
-    aggressive numeric threshold changes until several runs confirm direction.
+    v0.3 focuses on output/actionability quality: contract address visibility, liquidity tier separation, visible PVP/mature detail tables, and chain-verification flags. It avoids aggressive numeric threshold changes until several runs confirm direction.
     """
     candidates = snapshot.get("candidates", [])
     summary = snapshot.get("summary", {})
@@ -32,8 +30,43 @@ def evaluate_strategy_patch(snapshot: Dict[str, Any], previous: Dict[str, Any], 
     mature_ratio = mature_count / total if total else 0
     conflict_count = summary.get("multi_pool_conflict_count", 0)
     symbol_bridge_count = summary.get("symbol_bridge_merge_count", 0)
+    address_missing = summary.get("contract_address_missing_count", 0)
+    needs_chain_verify = summary.get("needs_chain_verify_count", 0)
+    emergency_count = summary.get("emergency_precision_check_count", 0)
 
     patches = []
+
+
+
+    if address_missing > 0:
+        patches.append({
+            "field": "contract_address_policy",
+            "old_value": "not_required_in_main_table",
+            "new_value": "required_with_unavailable_marker",
+            "reason": "本轮存在缺失合约地址的候选；没有合约地址无法进入BSC RPC/Helius链上确认",
+            "impact": "下轮继续强制在结果表展示合约地址，缺失地址的候选不得进入高置信精查",
+            "writeback_type": "logical_confirmation_only",
+        })
+
+    if needs_chain_verify > 0:
+        patches.append({
+            "field": "chain_verify_pipeline",
+            "old_value": "not_visible",
+            "new_value": "needs_chain_verify_flag_plus_reason",
+            "reason": "观察池候选需要链上Swap、钱包留存和大额买卖确认；v0.3已生成确认标记",
+            "impact": "下轮报告继续输出链上确认/紧急精查表，为接BSC RPC/Helius做准备",
+            "writeback_type": "logical_confirmation_only",
+        })
+
+    if emergency_count > 0:
+        patches.append({
+            "field": "emergency_precision_check_policy",
+            "old_value": "not_available",
+            "new_value": "flag_high_priority_candidates_for_manual_or_api_deep_check",
+            "reason": "本轮出现满足LP、低波动、买盘占优、非多池冲突的高优先候选",
+            "impact": "下轮这类候选优先进入链上精查或AVE单币紧急刷新建议",
+            "writeback_type": "logical_confirmation_only",
+        })
 
     if pvp_count == 0 and total >= 20:
         patches.append({
@@ -99,7 +132,7 @@ def evaluate_strategy_patch(snapshot: Dict[str, Any], previous: Dict[str, Any], 
         return {
             "has_patch": True,
             "patches": patches,
-            "summary": "本轮确认结构性规则：早期Alpha区间过滤、PVP可见分层、多池冲突降置信、重复合并增强",
+            "summary": "本轮确认结构性规则：合约地址强制展示、LP层级分离、PVP/成熟池明细、链上确认标记、早期Alpha过滤、多池冲突降置信",
             "evaluated_at": now,
         }
 
@@ -107,6 +140,6 @@ def evaluate_strategy_patch(snapshot: Dict[str, Any], previous: Dict[str, Any], 
         "has_patch": False,
         "patches": [],
         "summary": "本轮无充分数据支持数值阈值变更",
-        "no_patch_reason": "v0.2结构修正后先累计多轮样本，再做数值阈值调整",
+        "no_patch_reason": "v0.3结构和字段完整性修正后先累计多轮样本，再做数值阈值调整",
         "evaluated_at": now,
     }
