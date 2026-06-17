@@ -1,90 +1,161 @@
-# meme-self-evolving-patrol
+# meme-self-evolving-patrol v0.5
 
-BSC + SOL MEME 自我进化轮巡。
+BSC + SOL MEME / Alpha 自我进化轮巡系统。
 
-## 当前版本
+## v0.5 目标
 
-`v0.4.1-output-persistence-fix`
+v0.5 在 v0.4.1 的基础上新增三件事：
 
-## v0.4.1 新增/修复能力
+1. **AVE Smart Wallet 周缓存接入框架**
+   - AVE API Key 只放在 GitHub Secrets。
+   - 不在代码里硬写未确认的 AVE endpoint。
+   - 通过 `AVE_SMART_WALLET_ENDPOINT_TEMPLATE` 配置接口模板。
+   - 每周刷新一次 Smart Wallet 身份库。
 
-- 保留 v0.3 的合约地址输出、LP分层、PVP明细表、成熟池明细表、链上确认标记。
-- 新增 **BSC/SOL 链上地址预检**：
-  - BSC：通过 RPC `eth_getCode` 检查合约是否存在。
-  - SOL：通过 RPC `getAccountInfo` 检查 token/account 是否存在，并取少量签名样本。
-- 新增 **Smart Wallet Cache 持久化结构**：
-  - `output/smart_wallet_cache.json`
-  - AVE Smart Money 钱包标签每周刷新一次。
-  - 每小时轮巡只读取缓存，不每小时调用 AVE。
-- 新增 **AVE周缓存刷新workflow**：
-  - `.github/workflows/weekly_ave_refresh.yml`
-  - 默认每周一 UTC 00:00 运行，也可以手动运行。
-- 新增 **链上预检结果文件**：
-  - `output/chain_verify_latest.json`
+2. **Smart Wallet 持久保存**
+   - 调用 AVE 后保存钱包地址、链、标签、画像、置信度、关联 Token、风险标签。
+   - 新钱包追加。
+   - 旧钱包更新 `last_seen_at` / `last_refresh_at`。
+   - 新一轮未返回的钱包不直接删除，full refresh 时标记 `stale`。
+   - 超过有效期的钱包标记 `stale` / `expired`。
 
+3. **小时级钱包行为样本**
+   - 每小时仍不调 AVE。
+   - 每小时读取 `output/smart_wallet_cache.json`。
+   - 新增 `output/wallet_behavior_latest.json`。
+   - BSC 主观察 / 紧急精查候选会抓 ERC20 Transfer 样本。
+   - 把本轮活跃钱包与 AVE 周缓存做命中匹配。
 
-## v0.4.1 修复点
-
-- 强制生成 `output/chain_verify_latest.json`：即使RPC失败或未配置，也输出标准空结构。
-- 强制生成 `output/smart_wallet_cache.json`：即使AVE未配置，也输出标准空缓存结构。
-- Workflow提交方式改为 `git add -A output config`，避免新增文件没有被提交。
-- 报告底部限制说明更新为v0.4.1当前状态，不再残留v0.3表述。
-
-## 当前已接入数据源
-
-- DEXScreener：候选发现、价格、LP、成交、涨跌、多池数据。
-- GeckoTerminal：Trending pools / 后续 OHLCV 预留。
-- BSC RPC：v0.4 合约存在性预检。
-- Solana RPC / Helius：v0.4 账户存在性预检；如配置 `HELIUS_API_KEY`，优先使用 Helius RPC。
-
-## 尚未完成
-
-- BSC/SOL Swap 方向解析。
-- 钱包买入后 30m/1h 留存判断。
-- Router/CEX 出货路径追踪。
-- AVE 真实接口映射。v0.4 先完成缓存结构与周更workflow，v0.5 再接实际接口。
-- S0 精确历史回放。
+> 注意：v0.5 的 BSC 行为层只是 Transfer 样本，不是完整 Swap 留存。不能因为 Transfer 样本命中就直接判定真实聪明钱吸筹。
 
 ## 输出文件
 
-每次 GitHub Actions 跑完，会更新：
+| 文件 | 说明 |
+|---|---|
+| `output/latest_report.md` | 主报告 |
+| `output/latest_snapshot.json` | 本轮扫描快照 |
+| `output/previous_snapshot.json` | 上一轮快照 |
+| `output/chain_verify_latest.json` | 链上地址/账户预检结果 |
+| `output/wallet_behavior_latest.json` | v0.5 钱包行为样本与 AVE 命中 |
+| `output/smart_wallet_cache.json` | AVE Smart Wallet 周缓存 |
+| `output/ave_raw_smart_money.json` | AVE 周刷新原始响应/手动导入数据 |
+| `output/strategy_patch.json` | 自我进化策略调整建议 |
 
-- `output/latest_snapshot.json`
-- `output/previous_snapshot.json`
-- `output/latest_report.md`
-- `output/strategy_patch.json`
-- `output/chain_verify_latest.json`
-- `output/history/*.json`
+## GitHub Secrets / Variables
 
-AVE周缓存相关：
+### 必需 / 推荐 Secrets
 
-- `output/smart_wallet_cache.json`
-- `output/ave_raw_smart_money.json`
+| 名称 | 用途 |
+|---|---|
+| `BSC_RPC_URL` | BSC RPC；不配则使用公共 RPC fallback |
+| `SOLANA_RPC_URL` | SOL RPC；不配则使用公共 RPC fallback |
+| `HELIUS_API_KEY` | SOL 后续增强解析；v0.5 还未完整解析 |
+| `AVE_API_KEY` | AVE API Key，周刷新使用 |
+| `AVE_SMART_WALLET_ENDPOINT_TEMPLATE` | AVE Smart Wallet 接口模板 |
+| `AVE_AUTH_HEADER` | AVE 鉴权 Header，默认 `X-API-KEY` |
 
-## GitHub Secrets
+### 可选 Variables
 
-当前可选配置：
+| 名称 | 默认值 | 用途 |
+|---|---:|---|
+| `AVE_TARGET_LIMIT` | 12 | 每周 AVE 刷新的候选数量 |
+| `AVE_REFRESH_SCOPE` | incremental | `incremental` 或 `full`；full 会把未返回的旧钱包标记 stale |
 
-| Secret | 用途 | 是否必须 |
-|---|---|---|
-| `HELIUS_API_KEY` | SOL RPC增强查询 | 否 |
-| `BSC_RPC_URL` | 自定义BSC RPC | 否 |
-| `SOLANA_RPC_URL` | 自定义Solana RPC | 否 |
-| `AVE_API_KEY` | 后续AVE周缓存刷新 | v0.5后需要 |
+## AVE endpoint template 写法
 
-## 使用方式
+因为 AVE 的接口路径需要以你实际拿到的 API 文档为准，这里不硬编码 endpoint。
 
-1. 上传代码到仓库根目录。
-2. 进入 Actions。
-3. 手动运行 `自我进化轮巡`。
-4. 查看 `output/latest_report.md`。
-5. 可选：配置 `HELIUS_API_KEY`，提高 SOL 预检稳定性。
-6. 后续配置 `AVE_API_KEY` 后，每周运行 `AVE Smart Wallet 周缓存刷新`。
+模板支持：
 
-## 关键原则
+```text
+{chain}
+{token}
+{token_address}
+{address}
+{pair_address}
+```
 
-- 不把 Net Buys 为正直接等同于 Smart Money 吸筹。
-- AVE Smart Money 标签只周更，不每小时刷新。
-- 每小时轮巡负责行情、LP、成交、PVP、多池、链上预检。
-- Smart 钱包身份来自周缓存；当前买卖行为来自链上/DEX小时级数据。
-- AVE刷新时保存 smart wallet 地址、标签、画像、置信度、关联Token和风险标签；失效标签不直接删除，只标记 stale/expired。
+示例格式：
+
+```text
+https://your-ave-endpoint.example/smart-wallets?chain={chain}&token={token_address}
+```
+
+如果接口要求 Authorization Bearer：
+
+```text
+AVE_AUTH_HEADER=Authorization
+AVE_API_KEY=Bearer xxxxx
+```
+
+如果接口要求自定义 Header：
+
+```text
+AVE_AUTH_HEADER=X-API-KEY
+AVE_API_KEY=xxxxx
+```
+
+## 手动导入 AVE 钱包数据
+
+如果暂时没有确认 AVE endpoint，可以把钱包数据写入：
+
+```text
+output/ave_raw_smart_money.json
+```
+
+格式：
+
+```json
+{
+  "wallets": [
+    {
+      "wallet_address": "0x...",
+      "chain": "bsc",
+      "labels": ["Smart Money", "Whale"],
+      "confidence": "high",
+      "related_tokens": ["0xToken..."],
+      "risk_flags": []
+    }
+  ]
+}
+```
+
+然后手动运行 GitHub Actions：
+
+```text
+AVE Smart Wallet 周缓存刷新 → Run workflow
+```
+
+系统会把这些钱包合并进 `output/smart_wallet_cache.json`。
+
+## 运行方式
+
+每小时轮巡：
+
+```text
+Actions → 自我进化轮巡 → Run workflow
+```
+
+每周 AVE 刷新：
+
+```text
+Actions → AVE Smart Wallet 周缓存刷新 → Run workflow
+```
+
+## v0.5 限制
+
+| 限制 | 说明 |
+|---|---|
+| AVE endpoint 未硬编码 | 必须通过 Secret 配置真实 endpoint template |
+| BSC Transfer 样本不是完整 Swap | 只能做预确认，不能直接高置信 |
+| SOL 仍未完整行为解析 | 需要 v0.6 接 Helius enhanced tx 或 token balance diff |
+| 钱包留存未完成 | v0.6 继续做买后 30m / 1h 留存 |
+| Router/CEX 出货路径未完成 | v0.6 继续做 |
+
+## 下一版 v0.6 方向
+
+1. BSC 完整 Swap 路径解析。
+2. Pair → Wallet 买入、Wallet → Pair 卖出、Router/CEX 转出识别。
+3. 买后 30m / 1h 是否留存。
+4. SOL Helius enhanced transaction 解析。
+5. Smart Wallet 命中 + 留存 + 未出货，才提升到高置信。

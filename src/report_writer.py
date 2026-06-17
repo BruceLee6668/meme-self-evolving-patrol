@@ -116,6 +116,25 @@ def chain_verify_rows(candidates: List[Dict[str, Any]], limit: int = 10) -> str:
     return "\n".join(lines)
 
 
+
+def wallet_behavior_rows(candidates: List[Dict[str, Any]], limit: int = 10) -> str:
+    rows = [c for c in candidates if c.get("wallet_behavior_status") and c.get("wallet_behavior_status") != "not_checked_this_run"]
+    if not rows:
+        return "| Token | 链 | 合约地址 | 行为状态 | 行为层级 | AVE命中 | 判断 |\n|---|---|---|---|---|---:|---|\n| - | - | - | 本轮无钱包行为样本 | - | 0 | - |"
+    rows = sorted(rows, key=lambda c: (int(c.get("smart_wallet_hit_count") or 0), bool(c.get("emergency_precision_check")), c.get("score", 0)), reverse=True)
+    lines = [
+        "| Token | 链 | 合约地址 | 行为状态 | 行为层级 | AVE命中 | 判断 |",
+        "|---|---|---|---|---|---:|---|",
+    ]
+    for c in rows[:limit]:
+        token = c.get("token") or "UNKNOWN"
+        token_cell = f"[{token}]({c.get('url')})" if c.get("url") else token
+        lines.append(
+            f"| {token_cell} | {c.get('chain_label') or c.get('chain')} | {_addr_cell(c)} | "
+            f"{c.get('wallet_behavior_status','-')} | {c.get('wallet_behavior_level','-')} | {c.get('smart_wallet_hit_count', 0)} | {c.get('smart_money_judgment','-')} |"
+        )
+    return "\n".join(lines)
+
 def _summary_rows(snapshot: Dict[str, Any]) -> str:
     s = snapshot.get("summary") or {}
     return "\n".join([
@@ -165,7 +184,7 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("")
     lines.append("## 一句话结论")
     if main_count > 0:
-        lines.append(f"本轮从 {merged_count} 个合并Token中筛出 {main_count} 个主观察候选。v0.4.1已把合约地址作为主输出字段，并增加Micro/Early/Liquid/Mature分层、PVP明细、成熟池明细、链上地址预检、AVE Smart Wallet周缓存状态，并强制落地chain_verify_latest.json与smart_wallet_cache.json。")
+        lines.append(f"本轮从 {merged_count} 个合并Token中筛出 {main_count} 个主观察候选。v0.5已在v0.4.1基础上增加AVE周缓存真实接口接入框架、Smart Wallet持久保存、wallet_behavior_latest.json，以及BSC Transfer级钱包行为样本。注意：BSC当前是Transfer样本，不等同完整Swap解码。")
     else:
         lines.append("本轮没有出现可直接确认的“干净底部聪明钱扫货”。")
     lines.append(f"合约地址可用 {addr_ok} 个，缺失 {addr_missing} 个；缺失地址的候选不能进入后续链上精查。")
@@ -177,13 +196,15 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
 
     scache = snapshot.get("smart_wallet_cache_status") or {}
     cverify = snapshot.get("chain_verify") or {}
-    lines.append("## v0.4 数据确认状态")
+    lines.append("## v0.5 数据确认状态")
     lines.append("| 项目 | 状态 |")
     lines.append("|---|---|")
     lines.append(f"| AVE Smart Wallet周缓存 | {scache.get('status', 'empty')}，钱包数 {scache.get('wallet_count', 0)}，刷新时间 {scache.get('last_refresh_at') or '未刷新'}，是否过期 {'是' if scache.get('is_stale') else '否'} |")
     lines.append(f"| 链上预检 | 本轮检查 {cverify.get('checked_count', 0)} 个，验证通过 {cverify.get('verified_count', 0)} 个，失败 {cverify.get('failed_count', 0)} 个 |")
     lines.append(f"| Helius状态 | {'已配置' if cverify.get('helius_configured') else '未配置，SOL使用公共RPC或跳过增强解析'} |")
-    lines.append(f"| 当前精查层级 | {cverify.get('version', 'not_connected')}：只做地址/账户预检，尚未做Swap留存解析；v0.4.1会强制生成结果文件 |")
+    lines.append(f"| 当前精查层级 | {cverify.get('version', 'not_connected')}：地址/账户预检 + v0.5钱包行为样本，完整Swap留存仍待下一版 |")
+    wbeh = snapshot.get("wallet_behavior") or {}
+    lines.append(f"| 钱包行为样本 | 本轮检查 {wbeh.get('checked_count', 0)} 个，BSC Transfer样本 {wbeh.get('bsc_transfer_checked_count', 0)} 个，SOL签名级 {wbeh.get('solana_signature_only_count', 0)} 个，AVE钱包命中 {wbeh.get('smart_wallet_hit_count', 0)} 个 |")
     lines.append("")
 
     lines.append("## 第一部分：生成结果表格")
@@ -213,6 +234,10 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append(chain_verify_rows(candidates, limit=10))
     lines.append("")
 
+    lines.append("### F. 钱包行为 / AVE命中样本表")
+    lines.append(wallet_behavior_rows(candidates, limit=10))
+    lines.append("")
+
     lines.append("## 第二部分：逻辑复盘表格")
     lines.append("")
     lines.append("### A. 上次逻辑总结表")
@@ -222,7 +247,7 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("| PVP过滤 | Volume/LP > 8x 降级，>20x 排除主榜 | v0.3增加PVP明细表，风险不再黑箱隐藏 |")
     lines.append("| 多池处理 | symbol bridge合并，以最大LP池为代表 | v0.3保留，并继续标注多池冲突 |")
     lines.append("| 合约地址 | v0.2未在主表强制展示 | v0.3强制展示合约地址；缺失时标注不可用 |")
-    lines.append("| Smart Money | AVE周缓存/本地钱包评分/代理指标分层 | v0.4.1已预留并强制落地Smart Wallet缓存；无缓存时仍为代理指标，置信度低 |")
+    lines.append("| Smart Money | AVE周缓存/本地钱包评分/代理指标分层 | v0.5已支持AVE周缓存接口框架与本地持久保存；缓存为空/过期时仍为低置信，命中后也要看链上行为 |")
     lines.append("")
 
     lines.append("### B. 本轮逻辑总结表")
@@ -234,7 +259,7 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append(f"| 合约地址覆盖 | 可用 {addr_ok}，缺失 {addr_missing} | 地址缺失会阻断BSC RPC/Helius精查，需要优先补齐 |")
     lines.append(f"| LP层级 | Micro {summary.get('micro_tier_count',0)} / Early {summary.get('early_tier_count',0)} / Liquid {summary.get('liquid_tier_count',0)} / Mature {summary.get('mature_tier_count',0)} | 下一步可以按层级分别设置进攻规则 |")
     lines.append("| S0对比 | 尚未做精确历史回放 | 后续用GeckoTerminal OHLCV / 链上数据补齐 |")
-    lines.append("| 链上确认 | v0.4执行地址/账户预检 | 只能确认合约/账户存在，不能替代Swap留存判断 |")
+    lines.append("| 链上确认 | v0.5执行地址/账户预检 + BSC Transfer级钱包行为样本 | 可以初步看到活跃钱包/缓存命中，但仍不能替代完整Swap留存判断 |")
     lines.append("| Smart Money | AVE周缓存 + 代理指标 | 无具体钱包映射前，不允许标记真实吸筹 |")
     lines.append("")
 
@@ -245,19 +270,19 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
         for p in patch.get("patches", []):
             lines.append(f"| {p.get('field')} | {p.get('reason')} | {p.get('impact')} |")
     else:
-        lines.append("| 暂无自动数值调整 | v0.4.1先修复链上预检和Smart Wallet缓存落地，不轻易改阈值 | 维持当前策略，继续累计样本 |")
+        lines.append("| 暂无自动数值调整 | v0.5先接AVE周缓存框架与钱包行为样本，不轻易改阈值 | 维持当前策略，继续累计样本 |")
     lines.append("")
 
     lines.append("### D. 挖掘策略调优表")
     lines.append("| 项目 | 本轮判断 |")
     lines.append("|---|---|")
-    lines.append("| 当前挖掘策略是否有效 | 部分有效：免费源可发现候选，v0.4能展示合约地址、PVP明细、成熟池明细、链上地址预检和AVE缓存状态 |")
-    lines.append("| 主要问题 | 缺少钱包级Swap留存、AVE真实接口周刷新和S0精确回放；v0.4.1只能做链上地址预检，但会稳定落地预检和缓存文件 |")
+    lines.append("| 当前挖掘策略是否有效 | 部分有效：免费源可发现候选，v0.5能展示合约地址、PVP明细、成熟池明细、链上地址预检、AVE缓存状态和钱包行为样本 |")
+    lines.append("| 主要问题 | AVE接口已做可配置接入框架，BSC已做Transfer行为样本；仍缺完整Swap路径、钱包买后留存、Router/CEX出货和S0精确回放 |")
     lines.append("| 假阳性风险 | 已降低，但代理指标仍可能误判买盘质量 |")
     lines.append("| 漏筛风险 | 存在，DEXScreener/GeckoTerminal无法覆盖所有新池细节 |")
-    lines.append("| 候选来源调整 | 暂不新增高频外部源，下一步把v0.4.1地址预检升级为BSC/SOL Swap解析和钱包留存 |")
+    lines.append("| 候选来源调整 | 暂不新增高频外部源，下一步把v0.5 Transfer样本升级为完整Swap解析、钱包留存和Router/CEX路径 |")
     lines.append("| 阈值调整 | 暂不改数值；先按Micro/Early/Liquid/Mature层级观察不同阶段表现 |")
-    lines.append("| 下轮挖掘方向 | 主观察必须有合约地址；优先对emergency_precision_check做Swap留存解析；AVE只周更保存Smart Wallet身份库 |")
+    lines.append("| 下轮挖掘方向 | 主观察必须有合约地址；优先对emergency_precision_check做完整Swap留存解析；AVE只周更保存Smart Wallet身份库，每小时只映射当前链上行为 |")
     lines.append("")
 
     lines.append("## 第三部分：策略回写确认")
@@ -266,7 +291,7 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("|---|---|")
     lines.append(f"| 是否已将本轮优化策略写回主定时策略 | {'是' if patch.get('has_patch') else '否'} |")
     lines.append(f"| 写回内容摘要 | {patch.get('summary', '本轮无策略变更')} |")
-    lines.append(f"| 下轮是否生效 | {'是' if patch.get('has_patch') else '维持v0.4策略'} |")
+    lines.append(f"| 下轮是否生效 | {'是' if patch.get('has_patch') else '维持v0.5策略'} |")
     lines.append(f"| 未写回原因 | {patch.get('no_patch_reason', '-') if not patch.get('has_patch') else '-'} |")
     lines.append("")
 

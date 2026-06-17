@@ -1,4 +1,20 @@
 {
+  "version": "0.5.0-ave-weekly-cache-refresh",
+  "run_time_utc": "2026-06-17T17:34:08Z",
+  "api_key_present": false,
+  "endpoint_template_configured": false,
+  "auth_header": "X-API-KEY",
+  "target_count": 0,
+  "refresh_scope": "incremental",
+  "responses": [],
   "wallets": [],
-  "note": "Optional input placeholder. Weekly AVE workflow can merge rows from this file into smart_wallet_cache.json until direct AVE endpoint mapping is finalized."
+  "status": "endpoint_or_key_not_configured",
+  "limitations": [
+    "AVE endpoint is configurable. The code does not hard-code an undocumented AVE path.",
+    "If endpoint is not configured, the workflow preserves existing cache and can still merge manually supplied output/ave_raw_smart_money.json rows."
+  ],
+  "manual_wallet_rows_merged": 0,
+  "merged_wallet_rows": 0,
+  "cache_wallet_count_after_merge": 0,
+  "cache_status_after_merge": "empty"
 }

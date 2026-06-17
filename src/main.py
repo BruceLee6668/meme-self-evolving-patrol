@@ -9,6 +9,7 @@ from .chain_verify import verify_candidates
 from .report_writer import build_report
 from .self_evolver import evaluate_strategy_patch
 from .smart_wallet_cache import load_smart_wallet_cache, write_smart_wallet_cache
+from .wallet_behavior import analyze_wallet_behavior
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config" / "strategy_config.json"
@@ -18,6 +19,7 @@ PREVIOUS_SNAPSHOT = OUTPUT_DIR / "previous_snapshot.json"
 LATEST_REPORT = OUTPUT_DIR / "latest_report.md"
 STRATEGY_PATCH = OUTPUT_DIR / "strategy_patch.json"
 CHAIN_VERIFY_LATEST = OUTPUT_DIR / "chain_verify_latest.json"
+WALLET_BEHAVIOR_LATEST = OUTPUT_DIR / "wallet_behavior_latest.json"
 SMART_WALLET_CACHE = OUTPUT_DIR / "smart_wallet_cache.json"
 HISTORY_DIR = OUTPUT_DIR / "history"
 
@@ -61,22 +63,32 @@ def main() -> None:
         "age_days": smart_cache.get("age_days"),
         "is_stale": smart_cache.get("is_stale"),
         "valid_days": smart_cache.get("valid_days"),
+        "active_wallet_count": smart_cache.get("active_wallet_count"),
+        "stale_wallet_count": smart_cache.get("stale_wallet_count"),
+        "expired_wallet_count": smart_cache.get("expired_wallet_count"),
     }
     for c in snapshot.get("candidates", []):
         if smart_cache.get("status") == "active":
-            c["smart_money_source_status"] = "ave_weekly_cache_available_plus_proxy"
-            c["smart_money_judgment"] = str(c.get("smart_money_judgment", "")) + "；AVE周缓存可用，等待链上钱包映射"
+            c["smart_money_source_status"] = "ave_weekly_cache_available_plus_chain_behavior"
+            c["smart_money_judgment"] = str(c.get("smart_money_judgment", "")) + "；AVE周缓存可用，等待本轮链上行为映射"
         elif smart_cache.get("status") == "stale":
-            c["smart_money_source_status"] = "ave_weekly_cache_stale_plus_proxy"
+            c["smart_money_source_status"] = "ave_weekly_cache_stale_plus_chain_behavior"
             c["smart_money_judgment"] = str(c.get("smart_money_judgment", "")) + "；AVE周缓存过期，不作高置信依据"
         else:
             c["smart_money_source_status"] = "proxy_only_no_ave_cache"
 
     chain_verify = verify_candidates(snapshot, strategy)
     snapshot["chain_verify"] = {k: v for k, v in chain_verify.items() if k != "results"}
+
+    # v0.5: hourly wallet behavior sample. This reads the AVE weekly cache,
+    # then tries to map current chain activity to known Smart Wallet identities.
+    wallet_behavior = analyze_wallet_behavior(snapshot, strategy, smart_cache, chain_verify)
+    snapshot["wallet_behavior"] = {k: v for k, v in wallet_behavior.items() if k != "results"}
+
     patch = evaluate_strategy_patch(snapshot, previous, strategy)
 
     write_json(CHAIN_VERIFY_LATEST, chain_verify)
+    write_json(WALLET_BEHAVIOR_LATEST, wallet_behavior)
     write_json(LATEST_SNAPSHOT, snapshot)
     write_json(STRATEGY_PATCH, patch)
 

@@ -52,7 +52,7 @@ def verify_candidates(snapshot: Dict[str, Any], strategy: Dict[str, Any]) -> Dic
     """v0.4 lightweight on-chain verification.
 
     This is deliberately limited to address/account existence and signature preflight.
-    It does not yet parse swaps or wallet retention. That parsing belongs to v0.5+.
+    It does not yet parse swaps or wallet retention. That parsing belongs to v0.6+.
     """
     candidates = snapshot.get("candidates", [])
     max_verify = int(strategy.get("chain_verify", {}).get("max_candidates_per_run", 12))
@@ -111,7 +111,7 @@ def verify_candidates(snapshot: Dict[str, Any], strategy: Dict[str, Any]) -> Dic
 
     ok_count = sum(1 for r in results if r.get("status") == "verified")
     return {
-        "version": "0.4.1-chain-preflight-persistence-fix",
+        "version": "0.5.0-chain-preflight-plus-wallet-behavior",
         "run_time_utc": _now(),
         "checked_count": len(results),
         "verified_count": ok_count,
@@ -121,8 +121,8 @@ def verify_candidates(snapshot: Dict[str, Any], strategy: Dict[str, Any]) -> Dic
         "helius_configured": bool(helius_key),
         "results": results,
         "limitations": [
-            "v0.4.1只做地址/账户存在性与SOL签名样本预检，不解析Swap方向；即使RPC未配置或失败，也会落地标准结果文件。",
-            "钱包买入、卖出、留存、转Router/CEX需要v0.5继续实现。",
+            "v0.5链上预检仍只做地址/账户存在性与SOL签名样本；钱包行为样本由wallet_behavior_latest.json承接。",
+            "完整钱包买入、卖出、留存、转Router/CEX需要v0.6继续实现。",
             "未配置HELIUS_API_KEY时，SOL使用公共RPC，可能限速或返回不稳定。",
         ],
     }

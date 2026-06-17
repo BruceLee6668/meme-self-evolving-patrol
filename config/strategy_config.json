@@ -1,6 +1,6 @@
 {
   "name": "自我进化轮巡",
-  "version": "0.4.1-output-persistence-fix",
+  "version": "0.5.0-ave-cache-wallet-behavior-prep",
   "s0_anchor": {
     "jst": "2026-06-16T16:15:17+09:00",
     "beijing": "2026-06-16T15:15:17+08:00",
@@ -13,11 +13,12 @@
       "solana"
     ],
     "include_sources": [
+      "ave_weekly_cache",
+      "bsc_rpc_preflight",
       "dexscreener",
       "geckoterminal",
-      "bsc_rpc_preflight",
       "solana_rpc_preflight",
-      "ave_weekly_cache"
+      "wallet_behavior_transfer_sample"
     ],
     "include_segments": [
       "four.meme",
@@ -89,7 +90,21 @@
     "do_not_delete_missing_wallets": true,
     "mark_missing_or_old_labels_as": "stale_or_expired",
     "hourly_identity_source": "AVE_weekly_cache",
-    "hourly_behavior_source": "chain_or_dex_current_events"
+    "hourly_behavior_source": "chain_or_dex_current_events",
+    "ave_api": {
+      "mode": "configurable_endpoint_template",
+      "smart_wallet_endpoint_template": "",
+      "endpoint_template_secret": "AVE_SMART_WALLET_ENDPOINT_TEMPLATE",
+      "api_key_secret": "AVE_API_KEY",
+      "auth_header": "X-API-KEY",
+      "target_limit": 12,
+      "refresh_scope": "incremental",
+      "notes": [
+        "Do not hard-code an undocumented AVE endpoint. Put the endpoint template in GitHub Secrets.",
+        "Template supports {chain}, {token_address}, {token}, {pair_address}.",
+        "If endpoint is absent, workflow preserves cache and can merge output/ave_raw_smart_money.json."
+      ]
+    }
   },
   "scoring_weights": {
     "liquidity": 22,
@@ -118,7 +133,13 @@
     "onchain_address_preflight": true,
     "smart_wallet_cache_persistence": true,
     "weekly_ave_refresh_workflow": true,
-    "do_not_hourly_refresh_ave_smart_money": true
+    "do_not_hourly_refresh_ave_smart_money": true,
+    "ave_configurable_endpoint_framework": true,
+    "smart_wallet_weekly_persistent_cache": true,
+    "wallet_behavior_latest_output": true,
+    "bsc_transfer_activity_sample": true,
+    "smart_wallet_cache_hit_mapping": true,
+    "do_not_treat_transfer_sample_as_full_swap": true
   },
   "output_format": {
     "require_previous_result_table": true,
@@ -145,27 +166,50 @@
     "v0.4 adds BSC/SOL address/account preflight for candidates that need chain verification.",
     "v0.4 adds persistent Smart Wallet Cache structure. AVE Smart Money calls should save wallet addresses, labels, confidence, related tokens and status to output/smart_wallet_cache.json.",
     "v0.4 separates weekly AVE wallet identity refresh from hourly current wallet behavior tracking.",
-    "Wallet identities missing from a new AVE refresh should not be blindly deleted; mark stale/expired instead."
+    "Wallet identities missing from a new AVE refresh should not be blindly deleted; mark stale/expired instead.",
+    "v0.5 adds configurable AVE endpoint integration for weekly Smart Wallet refresh. AVE key remains in GitHub Secrets only.",
+    "v0.5 writes wallet_behavior_latest.json every hourly run.",
+    "v0.5 maps BSC ERC20 Transfer sample wallets to AVE weekly cache hits, but this is not yet full Swap retention confirmation.",
+    "Never upgrade confidence to high from Transfer sample alone; require full swap path and holding retention."
   ],
-  "last_updated_by": "assistant_v0.4_chain_preflight_smart_wallet_cache",
+  "last_updated_by": "assistant_v0.5_ave_cache_wallet_behavior_prep",
   "last_updated_at": null,
   "chain_verify": {
     "enabled": true,
-    "level": "address_preflight_v0.4",
+    "level": "address_preflight_plus_wallet_behavior_v0.5",
     "max_candidates_per_run": 12,
     "bsc_rpc_url": "https://bsc-dataseed.binance.org/",
     "solana_rpc_url_note": "Use HELIUS_API_KEY secret if available; otherwise public Solana RPC fallback.",
     "parse_swap_retention": false,
     "parse_wallet_router_cex_transfer": false,
     "notes": [
-      "v0.4 verifies BSC contract code and SOL token/account existence only.",
-      "v0.5 should parse Swap direction, large buyer wallets, holding retention, and sell-route transfers."
+      "v0.5 verifies BSC contract code and SOL token/account existence.",
+      "v0.5 adds BSC ERC20 Transfer activity samples for main/emergency candidates.",
+      "Transfer samples are not complete swap decoding; v0.6 should parse router path, DEX pair direction, retention and CEX/router outflows."
     ]
   },
   "release_notes": [
-    "v0.4.1 fixes output persistence for chain_verify_latest.json and smart_wallet_cache.json.",
-    "Hourly patrol now always bootstraps and writes smart wallet cache even when AVE is not configured.",
-    "Workflow uses git add -A output config to avoid missing new files caused by pathspec issues.",
-    "Report limitation text updated to v0.4.1 current state."
-  ]
+    "v0.5 adds configurable AVE weekly refresh endpoint support via GitHub Secrets.",
+    "Smart Wallet addresses, labels, profiles, confidence, related tokens and risk flags are saved into persistent cache.",
+    "Missing wallets from refresh are not deleted; full refresh can mark them stale instead.",
+    "Hourly patrol writes wallet_behavior_latest.json and maps BSC Transfer sample wallets to AVE cache hits.",
+    "BSC Transfer sample is a pre-confirmation layer, not final Swap retention.",
+    "SOL behavior parsing remains signature/account preflight until Helius enhanced transaction parsing is implemented."
+  ],
+  "wallet_behavior": {
+    "enabled": true,
+    "output_file": "output/wallet_behavior_latest.json",
+    "max_candidates_per_run": 8,
+    "bsc_transfer_lookback_blocks": 300,
+    "bsc_max_logs_per_token": 250,
+    "bsc_behavior_level": "erc20_transfer_sample",
+    "solana_behavior_level": "signature_sample_only_until_helius_enhanced_parse",
+    "match_with_smart_wallet_cache": true,
+    "confidence_rule": "Cache hit + transfer sample is medium/low until full swap retention is parsed.",
+    "limitations": [
+      "pair->wallet is only buy-like when pair_address is reliable.",
+      "wallet->pair is only sell-like when pair_address is reliable.",
+      "SOL full wallet behavior needs Helius enhanced transaction or token balance diff parsing."
+    ]
+  }
 }
