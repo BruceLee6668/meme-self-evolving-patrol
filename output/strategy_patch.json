@@ -1,15 +1,4 @@
 {
-  "has_patch": true,
-  "patches": [
-    {
-      "field": "multi_pool_conflict_policy",
-      "old_value": "soft_check",
-      "new_value": "confidence_downgrade",
-      "reason": "本轮存在多池数据冲突，不能用单池数据给高置信判断",
-      "impact": "多池价格/LP冲突的币降置信度，不直接升级主观察",
-      "writeback_type": "logical_confirmation_only"
-    }
-  ],
-  "summary": "本轮确认结构性规则：PVP分离、多池冲突降置信、主榜保持稀缺",
-  "evaluated_at": "2026-06-17T16:45:59.787779Z"
+  "has_patch": false,
+  "summary": "waiting_for_first_v0_1_run"
 }

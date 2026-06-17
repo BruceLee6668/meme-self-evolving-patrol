@@ -69,8 +69,11 @@ def _summary_rows(snapshot: Dict[str, Any]) -> str:
         f"| 主观察 | {s.get('main_watch_count', 0)} |",
         f"| 次观察 | {s.get('secondary_watch_count', 0)} |",
         f"| PVP风险池 | {s.get('pvp_count', 0)} |",
+        f"| 成熟池观察 | {s.get('mature_count', 0)} |",
+        f"| 低优先观察 | {s.get('low_priority_count', 0)} |",
         f"| 多池Token | {s.get('multi_pool_count', 0)} |",
         f"| 多池冲突 | {s.get('multi_pool_conflict_count', 0)} |",
+        f"| Symbol桥接合并 | {s.get('symbol_bridge_merge_count', 0)} |",
     ])
 
 
@@ -93,7 +96,7 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("")
     lines.append("## 一句话结论")
     if main_count > 0:
-        lines.append(f"本轮从 {merged_count} 个合并Token中筛出 {main_count} 个主观察候选。v0.1已压缩主榜数量，但仍未接入钱包级确认，不能直接定义为真实聪明钱吸筹。")
+        lines.append(f"本轮从 {merged_count} 个合并Token中筛出 {main_count} 个主观察候选。v0.2已加入早期Alpha区间过滤和PVP可见分层，但仍未接入钱包级确认，不能直接定义为真实聪明钱吸筹。")
     else:
         lines.append("本轮没有出现可直接确认的“干净底部聪明钱扫货”。")
     lines.append("")
@@ -122,18 +125,18 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("### A. 上次逻辑总结表")
     lines.append("| 逻辑项 | 上次规则 | 本轮验证 |")
     lines.append("|---|---|---|")
-    lines.append("| 主观察门槛 | LP >= $100K，且非PVP | v0.1继续保留，并增加主观察数量上限 |")
+    lines.append("| 主观察门槛 | LP >= $100K，且非PVP | v0.2继续保留，并增加早期Alpha上限过滤 |")
     lines.append("| PVP过滤 | Volume/LP > 8x 降级，>20x 排除主榜 | 继续保留，避免刷量币进主榜 |")
-    lines.append("| 多池处理 | v0去重偏弱 | v0.1按Token合并多池，以最大LP池为代表 |")
+    lines.append("| 多池处理 | v0.1仍可能出现Gecko-only重复 | v0.2增加symbol bridge合并，以最大LP池为代表 |")
     lines.append("| Smart Money | AVE周缓存/本地钱包评分/代理指标分层 | 仍未接AVE，当前只用代理指标，置信度低 |")
     lines.append("")
 
     lines.append("### B. 本轮逻辑总结表")
     lines.append("| 逻辑项 | 本轮结果 | 判断 |")
     lines.append("|---|---|---|")
-    lines.append(f"| 主观察候选 | {main_count} 个 | 主榜已压缩，质量高于v0，但仍需钱包留存确认 |")
-    lines.append(f"| PVP风险池 | {pvp_count} 个 | PVP分层正常工作 |")
-    lines.append(f"| 多池合并 | {summary.get('multi_pool_count', 0)} 个多池Token | 避免单小池误判 |")
+    lines.append(f"| 主观察候选 | {main_count} 个 | 主榜已压缩，并排除过成熟大池，但仍需钱包留存确认 |")
+    lines.append(f"| PVP风险池 | {pvp_count} 个 | v0.2保留可见PVP池，避免风险币被静默忽略 |")
+    lines.append(f"| 多池合并 | {summary.get('multi_pool_count', 0)} 个多池Token，Symbol桥接 {summary.get('symbol_bridge_merge_count', 0)} 个 | 避免单小池和Gecko-only重复误判 |")
     lines.append("| S0对比 | 尚未做精确历史回放 | 后续用GeckoTerminal OHLCV / 链上数据补齐 |")
     lines.append("| Smart Money | 仅代理指标 | 不允许标记真实吸筹 |")
     lines.append("")
@@ -151,13 +154,13 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("### D. 挖掘策略调优表")
     lines.append("| 项目 | 本轮判断 |")
     lines.append("|---|---|")
-    lines.append("| 当前挖掘策略是否有效 | 部分有效：免费源可发现候选，v0.1能压缩主榜和合并多池 |")
+    lines.append("| 当前挖掘策略是否有效 | 部分有效：免费源可发现候选，v0.2能压缩主榜、合并多池、分离成熟池和PVP池 |")
     lines.append("| 主要问题 | 缺少钱包级数据、AVE周缓存、链上Swap留存和S0精确回放 |")
     lines.append("| 假阳性风险 | 已降低，但代理指标仍可能误判买盘质量 |")
     lines.append("| 漏筛风险 | 存在，DEXScreener/GeckoTerminal无法覆盖所有新池细节 |")
-    lines.append("| 候选来源调整 | 暂不新增，先观察v0.1稳定性；下一步接BSC/SOL链上精查 |")
-    lines.append("| 阈值调整 | 不立刻调数值，先用max_main_watchlist和多池合并修正结构 |")
-    lines.append("| 下轮挖掘方向 | 重点看主观察候选是否在下一轮保持LP、成交和非PVP结构 |")
+    lines.append("| 候选来源调整 | 暂不新增外部源，先观察v0.2早期Alpha过滤效果；下一步接BSC/SOL链上精查 |")
+    lines.append("| 阈值调整 | 已加入max_lp/max_fdv/max_mcap主榜上限；继续观察是否过严 |")
+    lines.append("| 下轮挖掘方向 | 重点看主观察是否更接近早期Alpha；同时检查PVP风险池是否不再为0、成熟资产是否不再占主榜 |")
     lines.append("")
 
     lines.append("## 第三部分：策略回写确认")

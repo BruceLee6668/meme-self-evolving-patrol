@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -14,7 +15,7 @@ CHAIN_MAP = {
     "solana": {"dex": "solana", "gecko": "solana", "label": "SOL"},
 }
 
-# v0.1: keep discovery broad, but post-filtering is much stricter.
+# v0.2: still broad discovery, then stricter early-alpha / PVP / maturity separation.
 SEARCH_QUERIES = [
     "four meme bsc",
     "four.meme",
@@ -26,9 +27,14 @@ SEARCH_QUERIES = [
     "pancakeswap meme",
     "raydium meme",
     "meteora meme",
+    "bnb meme",
+    "solana meme",
 ]
 
 STABLE_QUOTES = {"USDT", "USDC", "WBNB", "BNB", "SOL", "WSOL"}
+COMMON_AMBIGUOUS_SYMBOLS = {
+    "MEME", "MOON", "DOG", "CAT", "PEPE", "AI", "BTC", "ETH", "BNB", "SOL", "USDT", "USDC", "WBNB", "WSOL"
+}
 
 
 def _safe_float(value: Any, default: float = 0.0) -> float:
@@ -70,18 +76,20 @@ def _norm_address(addr: Any) -> str:
     return str(addr or "").strip().lower()
 
 
-def _token_identity(c: Dict[str, Any]) -> str:
-    """Group multi-pool entries for the same token.
+def _norm_symbol(v: Any) -> str:
+    s = str(v or "UNKNOWN").strip().upper()
+    # Remove noisy symbols so Gecko-only and Dex rows can bridge when they are likely the same token.
+    s = re.sub(r"[^A-Z0-9_.$-]", "", s)
+    return s or "UNKNOWN"
 
-    Prefer chain + token address. GeckoTerminal trending sometimes lacks token address,
-    so fallback to a conservative normalized symbol/name key.
-    """
+
+def _token_identity(c: Dict[str, Any]) -> str:
     chain = c.get("chain") or "unknown"
     addr = _norm_address(c.get("token_address"))
     if addr:
         return f"{chain}:addr:{addr}"
-    symbol = str(c.get("token") or "UNKNOWN").strip().upper()
-    name = str(c.get("token_name") or symbol).split("/")[0].strip().upper()
+    symbol = _norm_symbol(c.get("token"))
+    name = _norm_symbol(str(c.get("token_name") or symbol).split("/")[0])
     return f"{chain}:sym:{symbol}:{name}"
 
 
@@ -127,12 +135,14 @@ def normalize_dex_pair(pair: Dict[str, Any], source: str = "dexscreener") -> Opt
             age_hours = None
 
     quote_symbol = quote_token.get("symbol")
+    symbol_norm = _norm_symbol(token_symbol)
     return {
         "source": source,
         "chain": chain,
         "chain_label": CHAIN_MAP[chain]["label"],
         "dex_id": dex_id,
         "token": token_symbol,
+        "token_symbol_norm": symbol_norm,
         "token_name": token_name,
         "token_address": token_address,
         "pair_address": pair_address,
@@ -180,6 +190,7 @@ def normalize_gecko_pool(pool: Dict[str, Any], network: str) -> Optional[Dict[st
         "chain_label": CHAIN_MAP.get(network, {}).get("label", network.upper()),
         "dex_id": attrs.get("dex_id") or "unknown",
         "token": token_symbol,
+        "token_symbol_norm": _norm_symbol(token_symbol),
         "token_name": name,
         "token_address": None,
         "pair_address": address,
@@ -211,7 +222,34 @@ def _log_score(value: float, floor: float, cap: float, max_score: int) -> int:
     if value <= floor:
         return 0
     value = min(value, cap)
+    if cap <= floor:
+        return 0
     return int(round((math.log10(value) - math.log10(floor)) / (math.log10(cap) - math.log10(floor)) * max_score))
+
+
+def _is_mature_pool(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[bool, List[str]]:
+    th = strategy.get("thresholds", {})
+    max_lp_main = _safe_float(th.get("max_lp_main_usd"), 5_000_000)
+    max_fdv_main = _safe_float(th.get("max_fdv_main_usd"), 80_000_000)
+    max_mcap_main = _safe_float(th.get("max_mcap_main_usd"), 80_000_000)
+    mature_lp_warning = _safe_float(th.get("mature_lp_warning_usd"), 10_000_000)
+    mature_market_warning = _safe_float(th.get("mature_market_warning_usd"), 120_000_000)
+
+    lp = _safe_float(c.get("liquidity_usd"))
+    fdv = _safe_float(c.get("fdv"))
+    mcap = _safe_float(c.get("market_cap"))
+    reasons = []
+    if lp > max_lp_main:
+        reasons.append("LP超过早期Alpha主榜上限")
+    if fdv and fdv > max_fdv_main:
+        reasons.append("FDV超过早期Alpha主榜上限")
+    if mcap and mcap > max_mcap_main:
+        reasons.append("市值超过早期Alpha主榜上限")
+    if lp > mature_lp_warning:
+        reasons.append("成熟大池")
+    if (fdv and fdv > mature_market_warning) or (mcap and mcap > mature_market_warning):
+        reasons.append("成熟大市值")
+    return bool(reasons), reasons
 
 
 def score_candidate(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[str, str, int, Dict[str, Any], List[str]]:
@@ -228,7 +266,6 @@ def score_candidate(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[str, s
 
     lp = _safe_float(c.get("liquidity_usd"))
     vol = _safe_float(c.get("volume_24h_usd"))
-    vol1 = _safe_float(c.get("volume_1h_usd"))
     chg24 = _safe_float(c.get("price_change_24h_pct"))
     chg6 = _safe_float(c.get("price_change_6h_pct"))
     chg1 = _safe_float(c.get("price_change_1h_pct"))
@@ -241,19 +278,19 @@ def score_candidate(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[str, s
     flags: List[str] = []
     reason_parts: List[str] = []
 
-    liquidity_score = _log_score(lp, 10_000, 2_000_000, 22)
-    volume_score = _log_score(vol, 10_000, 5_000_000, 18)
+    # v0.2: avoid over-rewarding very mature LP. Use capped score and separate maturity penalty.
+    liquidity_score = _log_score(lp, 10_000, 1_500_000, 20)
+    volume_score = _log_score(vol, 10_000, 3_000_000, 17)
 
-    # Bottom/early score: we want movement, but not overheated movement.
     abs24 = abs(chg24)
-    if abs24 <= 10:
-        bottom_score = 20
+    if abs24 <= 8:
+        bottom_score = 22
         reason_parts.append("24H接近横盘")
-    elif abs24 <= 30:
+    elif abs24 <= 25:
         bottom_score = 17
         reason_parts.append("24H波动可控")
     elif abs24 <= max_bottom_change:
-        bottom_score = 10
+        bottom_score = 8
         reason_parts.append("24H未过热但已明显波动")
     else:
         bottom_score = 0
@@ -310,12 +347,16 @@ def score_candidate(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[str, s
         risk_penalty += 25
         flags.append("年轻币短期暴拉")
 
-    if not c.get("is_stable_quote") and c.get("source", "").startswith("dexscreener"):
-        # Not fatal, but unstable quote pairs are less reliable for USD conclusions.
+    if not c.get("is_stable_quote") and str(c.get("source", "")).startswith("dexscreener"):
         risk_penalty += 3
         flags.append("非主流报价池")
 
-    base = 25
+    is_mature, mature_reasons = _is_mature_pool(c, strategy)
+    if is_mature:
+        risk_penalty += 12
+        flags.extend(mature_reasons)
+
+    base = 24
     score = base + liquidity_score + volume_score + bottom_score + buy_balance_score - risk_penalty
     score = max(0, min(100, int(round(score))))
 
@@ -329,16 +370,19 @@ def score_candidate(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[str, s
         and (ratio is None or ratio <= max_ratio_main)
         and not hard_pvp
         and not soft_pvp
-        and score >= 78
+        and not is_mature
+        and score >= 76
     )
 
     if hard_pvp or (lp < min_lp_secondary and (ratio or 0) > pvp_warn):
         status = "PVP风险池"
+    elif is_mature and score >= 58:
+        status = "成熟池观察"
     elif can_main:
         status = "主观察"
-    elif score >= 66 and lp >= min_lp_secondary and not hard_pvp:
+    elif score >= 64 and lp >= min_lp_secondary and not hard_pvp:
         status = "次观察"
-    elif score >= 52:
+    elif score >= 50:
         status = "低优先观察"
     else:
         status = "放弃/仅记录"
@@ -350,19 +394,55 @@ def score_candidate(c: Dict[str, Any], strategy: Dict[str, Any]) -> Tuple[str, s
         "buy_balance_score": buy_balance_score,
         "risk_penalty": risk_penalty,
         "buy_ratio": _round_or_none(buy_ratio, 4),
+        "mature_pool": is_mature,
     }
     reason = "；".join(reason_parts + flags) if reason_parts or flags else "无明确优势"
     return status, reason, score, components, flags
 
 
 def merge_multi_pool_candidates(candidates: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    groups: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    """Merge multi-pool records.
+
+    v0.2 adds symbol bridge merging: GeckoTerminal rows often lack token address,
+    while DEXScreener rows have it. If chain+symbol match and symbol is not a common
+    ambiguous ticker, merge them to reduce duplicate outputs such as TOESCOIN/KINS.
+    """
+    initial: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for c in candidates:
-        groups[_token_identity(c)].append(c)
+        initial[_token_identity(c)].append(c)
+
+    # Build bridge: chain + normalized symbol -> all groups with that symbol.
+    by_symbol: Dict[Tuple[str, str], List[str]] = defaultdict(list)
+    for key, items in initial.items():
+        if not items:
+            continue
+        symbol = _norm_symbol(items[0].get("token"))
+        chain = items[0].get("chain") or "unknown"
+        by_symbol[(chain, symbol)].append(key)
+
+    final_groups: List[List[Dict[str, Any]]] = []
+    used = set()
+    for key, items in initial.items():
+        if key in used:
+            continue
+        chain = items[0].get("chain") or "unknown"
+        symbol = _norm_symbol(items[0].get("token"))
+        bridge_keys = by_symbol.get((chain, symbol), [])
+        # Only bridge non-ambiguous symbols to avoid merging unrelated MEME/PEPE/MOON tickers.
+        if symbol not in COMMON_AMBIGUOUS_SYMBOLS and len(bridge_keys) > 1:
+            merged_items: List[Dict[str, Any]] = []
+            for bk in bridge_keys:
+                merged_items.extend(initial[bk])
+                used.add(bk)
+            for mi in merged_items:
+                mi["symbol_bridge_merged"] = True
+            final_groups.append(merged_items)
+        else:
+            used.add(key)
+            final_groups.append(items)
 
     merged: List[Dict[str, Any]] = []
-    for _, items in groups.items():
-        # Pick representative pool by LP first, then volume. This avoids small-pool distortion.
+    for items in final_groups:
         best = sorted(
             items,
             key=lambda x: (_safe_float(x.get("liquidity_usd")), _safe_float(x.get("volume_24h_usd"))),
@@ -384,6 +464,7 @@ def merge_multi_pool_candidates(candidates: Iterable[Dict[str, Any]]) -> List[Di
         best["aggregate_liquidity_usd"] = total_lp
         best["aggregate_volume_24h_usd"] = total_vol
         best["multi_pool_price_spread_pct"] = _round_or_none(price_spread_pct, 2)
+        best["symbol_bridge_merged"] = any(i.get("symbol_bridge_merged") for i in items)
         best["top_pools"] = [
             {
                 "source": i.get("source"),
@@ -428,17 +509,33 @@ def build_candidate_notes(c: Dict[str, Any]) -> None:
         c["smart_money_judgment"] += "；多池数据存在冲突，降置信度"
     elif status == "主观察":
         c["confidence"] = "Medium-Low"
+    elif status == "成熟池观察":
+        c["confidence"] = "Low"
+        c["smart_money_judgment"] += "；资产偏成熟，不按早期吸筹处理"
     else:
         c["confidence"] = "Low"
 
     mapping = {
         "主观察": "保留主观察，等待链上钱包留存确认；不因代理指标直接买入",
         "次观察": "次观察，等成交/LP结构继续改善",
+        "成熟池观察": "成熟池观察，不占用早期Alpha主榜",
         "低优先观察": "低优先观察，不追高",
         "PVP风险池": "只记录热度，不进入主榜",
         "放弃/仅记录": "暂不参与",
     }
     c["operation_conclusion"] = mapping.get(status, "暂不参与")
+
+
+def _class_priority(c: Dict[str, Any]) -> Tuple[int, int]:
+    order = {
+        "主观察": 50,
+        "次观察": 40,
+        "PVP风险池": 35,
+        "成熟池观察": 30,
+        "低优先观察": 20,
+        "放弃/仅记录": 10,
+    }
+    return (order.get(c.get("classification"), 0), int(c.get("score", 0)))
 
 
 def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
@@ -448,17 +545,32 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
 
     dex = DexScreenerClient()
     gecko = GeckoTerminalClient()
+    th = strategy.get("thresholds", {})
+    profile_limit = int(th.get("profile_expand_limit", 30))
+    boost_limit = int(th.get("boost_expand_limit", 25))
+    search_limit = int(th.get("search_pair_limit_per_query", 15))
 
     try:
         profiles = dex.token_profiles_latest()
-        source_status["dexscreener_profiles"] = {"ok": True, "count": len(profiles), "note": "profiles counted only to control calls"}
+        source_status["dexscreener_profiles"] = {"ok": True, "count": len(profiles), "expanded": min(len(profiles), profile_limit)}
+        for p in profiles[:profile_limit]:
+            chain_id = p.get("chainId")
+            token_addr = p.get("tokenAddress")
+            if chain_id in {"bsc", "solana"} and token_addr:
+                try:
+                    for pair in dex.token_pairs(chain_id, token_addr)[:5]:
+                        norm = normalize_dex_pair(pair, "dexscreener_profile_expand")
+                        if norm:
+                            raw_candidates.append(norm)
+                except Exception:
+                    continue
     except Exception as exc:  # noqa: BLE001
         source_status["dexscreener_profiles"] = {"ok": False, "error": str(exc)}
 
     try:
         boosts = dex.token_boosts_latest()
-        source_status["dexscreener_boosts"] = {"ok": True, "count": len(boosts)}
-        for b in boosts[:15]:
+        source_status["dexscreener_boosts"] = {"ok": True, "count": len(boosts), "expanded": min(len(boosts), boost_limit)}
+        for b in boosts[:boost_limit]:
             chain_id = b.get("chainId")
             token_addr = b.get("tokenAddress")
             if chain_id in {"bsc", "solana"} and token_addr:
@@ -477,7 +589,7 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         try:
             pairs = dex.search_pairs(q)
             search_count += len(pairs)
-            for pair in pairs[:12]:
+            for pair in pairs[:search_limit]:
                 norm = normalize_dex_pair(pair, "dexscreener_search")
                 if norm:
                     raw_candidates.append(norm)
@@ -508,14 +620,23 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         c["age_hours"] = _round_or_none(c.get("age_hours"), 2)
         build_candidate_notes(c)
 
-    # Sort before cap so the strongest few keep 主观察.
-    merged = sorted(merged, key=lambda x: x.get("score", 0), reverse=True)
+    # Cap main watchlist first, then preserve a visible PVP pool in output.
     apply_main_watchlist_cap(merged, strategy)
-    # Re-sort after cap to keep table intuitive.
-    merged = sorted(merged, key=lambda x: (x.get("classification") == "主观察", x.get("score", 0)), reverse=True)
 
-    max_candidates = int(strategy.get("thresholds", {}).get("max_candidates", 25))
-    candidates = merged[:max_candidates]
+    max_candidates = int(th.get("max_candidates", 25))
+    pvp_keep = int(th.get("pvp_keep_limit", 8))
+    main_secondary = [c for c in merged if c.get("classification") in {"主观察", "次观察"}]
+    pvp = [c for c in merged if c.get("classification") == "PVP风险池"]
+    mature = [c for c in merged if c.get("classification") == "成熟池观察"]
+    low = [c for c in merged if c.get("classification") not in {"主观察", "次观察", "PVP风险池", "成熟池观察"}]
+
+    main_secondary = sorted(main_secondary, key=lambda x: x.get("score", 0), reverse=True)
+    pvp = sorted(pvp, key=lambda x: (_safe_float(x.get("volume_24h_usd")), x.get("score", 0)), reverse=True)[:pvp_keep]
+    mature = sorted(mature, key=lambda x: x.get("score", 0), reverse=True)
+    low = sorted(low, key=lambda x: x.get("score", 0), reverse=True)
+
+    candidates = (main_secondary + pvp + mature + low)[:max_candidates]
+    candidates = sorted(candidates, key=_class_priority, reverse=True)
 
     summary = {
         "raw_pair_count": len(raw_candidates),
@@ -523,9 +644,12 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         "returned_candidate_count": len(candidates),
         "main_watch_count": sum(1 for c in candidates if c.get("classification") == "主观察"),
         "secondary_watch_count": sum(1 for c in candidates if c.get("classification") == "次观察"),
+        "mature_count": sum(1 for c in candidates if c.get("classification") == "成熟池观察"),
         "pvp_count": sum(1 for c in candidates if c.get("classification") == "PVP风险池"),
+        "low_priority_count": sum(1 for c in candidates if c.get("classification") == "低优先观察"),
         "multi_pool_count": sum(1 for c in candidates if c.get("pool_count", 1) > 1),
         "multi_pool_conflict_count": sum(1 for c in candidates if c.get("multi_pool_conflict")),
+        "symbol_bridge_merge_count": sum(1 for c in candidates if c.get("symbol_bridge_merged")),
     }
 
     return {
@@ -537,10 +661,11 @@ def scan_free_sources(strategy: Dict[str, Any]) -> Dict[str, Any]:
         "summary": summary,
         "candidates": candidates,
         "data_limitations": [
-            "This v0.1 scan uses free public sources only.",
+            "This v0.2 scan uses free public sources only.",
             "AVE Smart Money weekly cache is not connected yet.",
             "S0 exact historical replay is not implemented yet; candidates are marked with current metrics only.",
             "Wallet-level buy/sell retention is not implemented yet.",
-            "Multi-pool tokens are merged by token identity where possible; Gecko-only rows without token address may still be approximate.",
+            "v0.2 adds early-alpha range filters; mature/liquid assets are separated from main early-alpha watchlist.",
+            "Symbol bridge merging reduces Gecko-only duplicates but may still be approximate for ambiguous tickers.",
         ],
     }

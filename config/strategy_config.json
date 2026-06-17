@@ -1,6 +1,6 @@
 {
   "name": "自我进化轮巡",
-  "version": "0.1.1-free-sources-quality-filter",
+  "version": "0.2.0-alpha-range-dedupe-pvp",
   "s0_anchor": {
     "jst": "2026-06-16T16:15:17+09:00",
     "beijing": "2026-06-16T15:15:17+08:00",
@@ -8,9 +8,22 @@
     "type": "timestamp_anchor_only"
   },
   "scan_scope": {
-    "chains": ["bsc", "solana"],
-    "include_sources": ["dexscreener", "geckoterminal"],
-    "include_segments": ["four.meme", "pump.fun", "pumpswap", "pancakeswap", "raydium", "meteora"]
+    "chains": [
+      "bsc",
+      "solana"
+    ],
+    "include_sources": [
+      "dexscreener",
+      "geckoterminal"
+    ],
+    "include_segments": [
+      "four.meme",
+      "pump.fun",
+      "pumpswap",
+      "pancakeswap",
+      "raydium",
+      "meteora"
+    ]
   },
   "thresholds": {
     "min_lp_main_usd": 100000,
@@ -23,12 +36,26 @@
     "max_volume_lp_ratio_main": 8,
     "min_volume_24h_usd": 50000,
     "max_candidates": 25,
-    "max_main_watchlist": 5
+    "max_main_watchlist": 5,
+    "max_lp_main_usd": 5000000,
+    "max_fdv_main_usd": 80000000,
+    "max_mcap_main_usd": 80000000,
+    "mature_lp_warning_usd": 10000000,
+    "mature_market_warning_usd": 120000000,
+    "profile_expand_limit": 30,
+    "boost_expand_limit": 25,
+    "search_pair_limit_per_query": 15,
+    "pvp_keep_limit": 8,
+    "min_pvp_volume_usd": 30000
   },
   "smart_money": {
     "ave_refresh_frequency": "weekly",
     "ave_cache_valid_days": 7,
-    "hourly_use": ["ave_weekly_cache", "local_wallet_score", "proxy_metrics"],
+    "hourly_use": [
+      "ave_weekly_cache",
+      "local_wallet_score",
+      "proxy_metrics"
+    ],
     "allow_emergency_refresh_suggestion": true,
     "emergency_refresh_conditions": {
       "min_lp_usd": 100000,
@@ -50,7 +77,11 @@
     "representative_pool": "largest_liquidity_pool",
     "downgrade_multi_pool_conflict": true,
     "cap_main_watchlist": true,
-    "score_components_required": true
+    "score_components_required": true,
+    "early_alpha_range_filter": true,
+    "symbol_bridge_merge_for_gecko_only": true,
+    "include_pvp_risk_pool_in_output": true,
+    "mature_pool_separation": true
   },
   "output_format": {
     "require_previous_result_table": true,
@@ -67,8 +98,11 @@
     "PVP tokens must be separated from the main bottom-accumulation watchlist.",
     "AVE Smart Money should be refreshed weekly, not hourly.",
     "Main watchlist should stay scarce; use max_main_watchlist to avoid noisy outputs.",
-    "Multi-pool tokens must be merged or marked as conflicting before judgment."
+    "Multi-pool tokens must be merged or marked as conflicting before judgment.",
+    "v0.2 adds early-alpha range filters so very mature / very large LP tokens do not occupy main watchlist.",
+    "v0.2 strengthens symbol-bridge merge between Gecko-only rows and DEXScreener token-address rows to reduce duplicate Token output.",
+    "v0.2 keeps a visible PVP risk pool in output so high-noise tokens are monitored separately rather than silently dropped."
   ],
-  "last_updated_by": "assistant_v0.1_quality_filter",
+  "last_updated_by": "assistant_v0.2_alpha_filter",
   "last_updated_at": null
 }
