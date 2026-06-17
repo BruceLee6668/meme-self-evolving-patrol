@@ -1,6 +1,6 @@
 {
   "name": "自我进化轮巡",
-  "version": "0.1.0-free-sources",
+  "version": "0.1.1-free-sources-quality-filter",
   "s0_anchor": {
     "jst": "2026-06-16T16:15:17+09:00",
     "beijing": "2026-06-16T15:15:17+08:00",
@@ -14,13 +14,16 @@
   },
   "thresholds": {
     "min_lp_main_usd": 100000,
+    "min_lp_secondary_usd": 50000,
     "max_24h_change_bottom_pct": 80,
     "young_token_hours": 6,
     "young_token_pump_pct": 100,
     "pvp_volume_lp_warning": 8,
     "pvp_volume_lp_exclude": 20,
+    "max_volume_lp_ratio_main": 8,
     "min_volume_24h_usd": 50000,
-    "max_candidates": 25
+    "max_candidates": 25,
+    "max_main_watchlist": 5
   },
   "smart_money": {
     "ave_refresh_frequency": "weekly",
@@ -36,11 +39,18 @@
     }
   },
   "scoring_weights": {
-    "liquidity": 20,
+    "liquidity": 22,
+    "volume_quality": 18,
     "bottom_structure": 20,
-    "volume_quality": 20,
-    "pvp_risk_penalty": 20,
-    "smart_money_proxy": 20
+    "buy_balance_proxy": 12,
+    "risk_penalty": 30
+  },
+  "quality_controls": {
+    "merge_multi_pool_by_token": true,
+    "representative_pool": "largest_liquidity_pool",
+    "downgrade_multi_pool_conflict": true,
+    "cap_main_watchlist": true,
+    "score_components_required": true
   },
   "output_format": {
     "require_previous_result_table": true,
@@ -55,8 +65,10 @@
     "Do not treat positive Net Buys as Smart Money accumulation without wallet-level confirmation.",
     "If wallet-level data is unavailable, confidence is capped at medium/low.",
     "PVP tokens must be separated from the main bottom-accumulation watchlist.",
-    "AVE Smart Money should be refreshed weekly, not hourly."
+    "AVE Smart Money should be refreshed weekly, not hourly.",
+    "Main watchlist should stay scarce; use max_main_watchlist to avoid noisy outputs.",
+    "Multi-pool tokens must be merged or marked as conflicting before judgment."
   ],
-  "last_updated_by": "initial_bootstrap",
+  "last_updated_by": "assistant_v0.1_quality_filter",
   "last_updated_at": null
 }

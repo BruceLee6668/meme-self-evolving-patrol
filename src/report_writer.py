@@ -23,6 +23,13 @@ def _fmt_pct(v: Any) -> str:
         return "-"
 
 
+def _fmt_ratio(v: Any) -> str:
+    try:
+        return f"{float(v):.2f}x"
+    except Exception:
+        return "-"
+
+
 def candidate_rows(candidates: List[Dict[str, Any]], limit: int = 10) -> str:
     if not candidates:
         return "| Token | 链 | 状态 | 核心指标 | 聪明钱包判断 | Smart Money数据来源 | 操作结论 |\n|---|---|---|---|---|---|---|\n| - | - | 无候选 | - | - | - | - |"
@@ -31,19 +38,19 @@ def candidate_rows(candidates: List[Dict[str, Any]], limit: int = 10) -> str:
         "|---|---|---|---|---|---|---|",
     ]
     for c in candidates[:limit]:
+        comp = c.get("score_components") or {}
         metrics = (
             f"Score {c.get('score', '-')}; "
             f"LP {_fmt_money(c.get('liquidity_usd'))}; "
             f"Vol24H {_fmt_money(c.get('volume_24h_usd'))}; "
             f"24H {_fmt_pct(c.get('price_change_24h_pct'))}; "
-            f"V/LP {c.get('volume_lp_ratio') if c.get('volume_lp_ratio') is not None else '-'}"
+            f"V/LP {_fmt_ratio(c.get('volume_lp_ratio'))}; "
+            f"池数 {c.get('pool_count', 1)}; "
+            f"分项 L{comp.get('liquidity_score','-')}/V{comp.get('volume_score','-')}/B{comp.get('bottom_score','-')}/Buy{comp.get('buy_balance_score','-')}/Risk-{comp.get('risk_penalty','-')}"
         )
         url = c.get("url")
         token = c.get("token") or "UNKNOWN"
-        if url:
-            token_cell = f"[{token}]({url})"
-        else:
-            token_cell = token
+        token_cell = f"[{token}]({url})" if url else token
         lines.append(
             f"| {token_cell} | {c.get('chain_label') or c.get('chain')} | {c.get('classification')} | {metrics} | "
             f"{c.get('smart_money_judgment')} | {c.get('smart_money_source')} | {c.get('operation_conclusion')} |"
@@ -51,25 +58,48 @@ def candidate_rows(candidates: List[Dict[str, Any]], limit: int = 10) -> str:
     return "\n".join(lines)
 
 
+def _summary_rows(snapshot: Dict[str, Any]) -> str:
+    s = snapshot.get("summary") or {}
+    return "\n".join([
+        "| 指标 | 数量 |",
+        "|---|---:|",
+        f"| 原始池子记录 | {s.get('raw_pair_count', 0)} |",
+        f"| 合并后Token | {s.get('merged_token_count', 0)} |",
+        f"| 输出候选 | {s.get('returned_candidate_count', 0)} |",
+        f"| 主观察 | {s.get('main_watch_count', 0)} |",
+        f"| 次观察 | {s.get('secondary_watch_count', 0)} |",
+        f"| PVP风险池 | {s.get('pvp_count', 0)} |",
+        f"| 多池Token | {s.get('multi_pool_count', 0)} |",
+        f"| 多池冲突 | {s.get('multi_pool_conflict_count', 0)} |",
+    ])
+
+
 def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: Dict[str, Any], patch: Dict[str, Any]) -> str:
     run_time = snapshot.get("run_time_utc") or datetime.now(timezone.utc).isoformat()
     candidates = snapshot.get("candidates", [])
     prev_candidates = previous.get("candidates", []) if isinstance(previous, dict) else []
+    summary = snapshot.get("summary") or {}
 
-    main_count = sum(1 for c in candidates if c.get("classification") == "主观察")
-    pvp_count = sum(1 for c in candidates if c.get("classification") == "PVP风险池")
+    main_count = summary.get("main_watch_count", sum(1 for c in candidates if c.get("classification") == "主观察"))
+    pvp_count = summary.get("pvp_count", sum(1 for c in candidates if c.get("classification") == "PVP风险池"))
+    merged_count = summary.get("merged_token_count", len(candidates))
 
     lines = []
     lines.append("# 自我进化轮巡")
     lines.append("")
     lines.append(f"**本轮时间 UTC：** {run_time}")
+    lines.append(f"**版本：** {snapshot.get('version', strategy.get('version', '-'))}")
     lines.append(f"**S0 时间锚点：** {strategy.get('s0_anchor', {}).get('jst', '-')}")
     lines.append("")
     lines.append("## 一句话结论")
     if main_count > 0:
-        lines.append(f"本轮发现 {main_count} 个主观察候选，但 v0 还未接入钱包级确认，不能直接定义为真实聪明钱吸筹。")
+        lines.append(f"本轮从 {merged_count} 个合并Token中筛出 {main_count} 个主观察候选。v0.1已压缩主榜数量，但仍未接入钱包级确认，不能直接定义为真实聪明钱吸筹。")
     else:
         lines.append("本轮没有出现可直接确认的“干净底部聪明钱扫货”。")
+    lines.append("")
+
+    lines.append("## 本轮扫描摘要")
+    lines.append(_summary_rows(snapshot))
     lines.append("")
 
     lines.append("## 第一部分：生成结果表格")
@@ -92,18 +122,20 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("### A. 上次逻辑总结表")
     lines.append("| 逻辑项 | 上次规则 | 本轮验证 |")
     lines.append("|---|---|---|")
-    lines.append("| 主观察门槛 | LP >= $100K | 继续保留，低 LP 候选不进主榜 |")
-    lines.append("| PVP过滤 | Volume/LP > 8x 降级，>20x 排除主榜 | 继续保留，防止高换手误判 |")
-    lines.append("| Smart Money | AVE周缓存/本地钱包评分/代理指标分层 | v0 未接 AVE，仅代理指标，置信度低 |")
+    lines.append("| 主观察门槛 | LP >= $100K，且非PVP | v0.1继续保留，并增加主观察数量上限 |")
+    lines.append("| PVP过滤 | Volume/LP > 8x 降级，>20x 排除主榜 | 继续保留，避免刷量币进主榜 |")
+    lines.append("| 多池处理 | v0去重偏弱 | v0.1按Token合并多池，以最大LP池为代表 |")
+    lines.append("| Smart Money | AVE周缓存/本地钱包评分/代理指标分层 | 仍未接AVE，当前只用代理指标，置信度低 |")
     lines.append("")
 
     lines.append("### B. 本轮逻辑总结表")
     lines.append("| 逻辑项 | 本轮结果 | 判断 |")
     lines.append("|---|---|---|")
-    lines.append(f"| 主观察候选 | {main_count} 个 | 需后续链上钱包留存确认 |")
+    lines.append(f"| 主观察候选 | {main_count} 个 | 主榜已压缩，质量高于v0，但仍需钱包留存确认 |")
     lines.append(f"| PVP风险池 | {pvp_count} 个 | PVP分层正常工作 |")
-    lines.append("| S0对比 | v0 尚未做精确历史回放 | 后续用 GeckoTerminal OHLCV / 链上数据补齐 |")
-    lines.append("| Smart Money | v0 仅代理指标 | 不允许标记真实吸筹 |")
+    lines.append(f"| 多池合并 | {summary.get('multi_pool_count', 0)} 个多池Token | 避免单小池误判 |")
+    lines.append("| S0对比 | 尚未做精确历史回放 | 后续用GeckoTerminal OHLCV / 链上数据补齐 |")
+    lines.append("| Smart Money | 仅代理指标 | 不允许标记真实吸筹 |")
     lines.append("")
 
     lines.append("### C. 本轮优化调整表")
@@ -113,17 +145,19 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
         for p in patch.get("patches", []):
             lines.append(f"| {p.get('field')} | {p.get('reason')} | {p.get('impact')} |")
     else:
-        lines.append("| 暂无自动调整 | v0 首轮/数据不足 | 维持当前策略，继续累计样本 |")
+        lines.append("| 暂无自动数值调整 | v0.1先做结构修正，不轻易改阈值 | 维持当前策略，继续累计样本 |")
     lines.append("")
 
     lines.append("### D. 挖掘策略调优表")
     lines.append("| 项目 | 本轮判断 |")
     lines.append("|---|---|")
-    lines.append("| 当前挖掘策略是否有效 | 部分有效：可完成免费源候选发现和PVP初筛 |")
+    lines.append("| 当前挖掘策略是否有效 | 部分有效：免费源可发现候选，v0.1能压缩主榜和合并多池 |")
     lines.append("| 主要问题 | 缺少钱包级数据、AVE周缓存、链上Swap留存和S0精确回放 |")
-    lines.append("| 假阳性风险 | 仍然存在，尤其是Net Buys/交易笔数代理指标 |")
+    lines.append("| 假阳性风险 | 已降低，但代理指标仍可能误判买盘质量 |")
     lines.append("| 漏筛风险 | 存在，DEXScreener/GeckoTerminal无法覆盖所有新池细节 |")
-    lines.append("| 下轮挖掘方向 | 先验证免费源稳定性，再接BSC/SOL链上确认与AVE周缓存 |")
+    lines.append("| 候选来源调整 | 暂不新增，先观察v0.1稳定性；下一步接BSC/SOL链上精查 |")
+    lines.append("| 阈值调整 | 不立刻调数值，先用max_main_watchlist和多池合并修正结构 |")
+    lines.append("| 下轮挖掘方向 | 重点看主观察候选是否在下一轮保持LP、成交和非PVP结构 |")
     lines.append("")
 
     lines.append("## 第三部分：策略回写确认")
@@ -132,7 +166,7 @@ def build_report(snapshot: Dict[str, Any], previous: Dict[str, Any], strategy: D
     lines.append("|---|---|")
     lines.append(f"| 是否已将本轮优化策略写回主定时策略 | {'是' if patch.get('has_patch') else '否'} |")
     lines.append(f"| 写回内容摘要 | {patch.get('summary', '本轮无策略变更')} |")
-    lines.append(f"| 下轮是否生效 | {'是' if patch.get('has_patch') else '维持原策略'} |")
+    lines.append(f"| 下轮是否生效 | {'是' if patch.get('has_patch') else '维持v0.1策略'} |")
     lines.append(f"| 未写回原因 | {patch.get('no_patch_reason', '-') if not patch.get('has_patch') else '-'} |")
     lines.append("")
 
