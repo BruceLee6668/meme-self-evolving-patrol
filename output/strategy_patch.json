@@ -32,8 +32,16 @@
       "reason": "本轮存在多池数据冲突，不能用单池数据给高置信判断",
       "impact": "多池价格/LP冲突的币降置信度，不直接升级主观察",
       "writeback_type": "logical_confirmation_only"
+    },
+    {
+      "field": "symbol_bridge_merge_policy",
+      "old_value": "address_only_or_gecko_symbol_fallback",
+      "new_value": "bridge_gecko_only_rows_to_dex_rows_when_symbol_is_non_ambiguous",
+      "reason": "本轮存在symbol桥接合并，说明重复输出问题正在被修正",
+      "impact": "减少同一Token在主观察/次观察中重复出现",
+      "writeback_type": "logical_confirmation_only"
     }
   ],
   "summary": "本轮确认结构性规则：合约地址强制展示、LP层级分离、PVP/成熟池明细、链上确认标记、早期Alpha过滤、多池冲突降置信",
-  "evaluated_at": "2026-06-18T22:01:50.244832Z"
+  "evaluated_at": "2026-06-19T00:22:35.564332Z"
 }
