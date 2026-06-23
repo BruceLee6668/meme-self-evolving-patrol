@@ -18,14 +18,30 @@
       "writeback_type": "logical_confirmation_only"
     },
     {
+      "field": "early_alpha_range_filter",
+      "old_value": "not_strict_enough",
+      "new_value": "mature_pool_separation",
+      "reason": "检测到成熟池候选，不能让大池成熟资产占用早期Alpha主榜",
+      "impact": "成熟大池进入成熟池观察，不作为底部MEME扫货主观察",
+      "writeback_type": "logical_confirmation_only"
+    },
+    {
       "field": "multi_pool_conflict_policy",
       "old_value": "confidence_downgrade",
       "new_value": "confidence_downgrade_plus_representative_largest_lp_pool",
       "reason": "本轮存在多池数据冲突，不能用单池数据给高置信判断",
       "impact": "多池价格/LP冲突的币降置信度，不直接升级主观察",
       "writeback_type": "logical_confirmation_only"
+    },
+    {
+      "field": "symbol_bridge_merge_policy",
+      "old_value": "address_only_or_gecko_symbol_fallback",
+      "new_value": "bridge_gecko_only_rows_to_dex_rows_when_symbol_is_non_ambiguous",
+      "reason": "本轮存在symbol桥接合并，说明重复输出问题正在被修正",
+      "impact": "减少同一Token在主观察/次观察中重复出现",
+      "writeback_type": "logical_confirmation_only"
     }
   ],
   "summary": "本轮确认结构性规则：合约地址强制展示、LP层级分离、PVP/成熟池明细、链上确认标记、早期Alpha过滤、多池冲突降置信",
-  "evaluated_at": "2026-06-22T23:24:39.578086Z"
+  "evaluated_at": "2026-06-23T02:44:37.199417Z"
 }
