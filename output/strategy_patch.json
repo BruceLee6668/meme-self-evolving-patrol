@@ -10,14 +10,6 @@
       "writeback_type": "logical_confirmation_only"
     },
     {
-      "field": "emergency_precision_check_policy",
-      "old_value": "not_available",
-      "new_value": "flag_high_priority_candidates_for_manual_or_api_deep_check",
-      "reason": "本轮出现满足LP、低波动、买盘占优、非多池冲突的高优先候选",
-      "impact": "下轮这类候选优先进入链上精查或AVE单币紧急刷新建议",
-      "writeback_type": "logical_confirmation_only"
-    },
-    {
       "field": "early_alpha_range_filter",
       "old_value": "not_strict_enough",
       "new_value": "mature_pool_separation",
@@ -43,5 +35,5 @@
     }
   ],
   "summary": "本轮确认结构性规则：合约地址强制展示、LP层级分离、PVP/成熟池明细、链上确认标记、早期Alpha过滤、多池冲突降置信",
-  "evaluated_at": "2026-06-24T13:15:52.762369Z"
+  "evaluated_at": "2026-06-24T16:13:58.031272Z"
 }
