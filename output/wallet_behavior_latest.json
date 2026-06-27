@@ -1,31 +1,13 @@
 {
   "version": "0.5.0-wallet-behavior-prep",
-  "run_time_utc": "2026-06-27T22:05:00Z",
+  "run_time_utc": "2026-06-27T23:57:23Z",
   "status": "checked",
-  "checked_count": 2,
-  "bsc_transfer_checked_count": 2,
-  "solana_signature_only_count": 0,
+  "checked_count": 3,
+  "bsc_transfer_checked_count": 1,
+  "solana_signature_only_count": 2,
   "smart_wallet_hit_count": 0,
   "smart_wallet_cache_status": "active",
   "results": [
-    {
-      "token": "ARX",
-      "chain": "bsc",
-      "token_address": "0xd5f6ef5deabe61e6d5cdb49bfb6f156f2c1ca715",
-      "pair_address": "0xf6170c9b48765c56dae252b10e87e9ac51330846fdb613b922f894bc9968a48f",
-      "classification": "主观察",
-      "score": 86,
-      "checked_at": "2026-06-27T22:03:29Z",
-      "status": "failed",
-      "behavior_level": "bsc_transfer_activity_v0.5",
-      "activity": {
-        "status": "failed",
-        "error": "<urlopen error timed out>"
-      },
-      "smart_wallet_hits": [],
-      "smart_wallet_hit_count": 0,
-      "smart_wallet_cache_status": "active"
-    },
     {
       "token": "O",
       "chain": "bsc",
@@ -33,16 +15,55 @@
       "pair_address": "0x1a9b68ca1dcacb106c4b853e2d9c915f0cfe2e56",
       "classification": "主观察",
       "score": 86,
-      "checked_at": "2026-06-27T22:04:15Z",
-      "status": "failed",
+      "checked_at": "2026-06-27T23:57:23Z",
+      "status": "checked",
       "behavior_level": "bsc_transfer_activity_v0.5",
       "activity": {
-        "status": "failed",
-        "error": "<urlopen error timed out>"
+        "status": "checked",
+        "latest_block": 106769017,
+        "from_block": 106768717,
+        "lookback_blocks": 300,
+        "raw_log_count": 0,
+        "unique_active_wallet_count": 0,
+        "top_receivers": [],
+        "top_senders": [],
+        "buy_like_receivers": [],
+        "sell_like_senders": [],
+        "limitation": "BSC v0.5 uses ERC20 Transfer logs. Pair-to-wallet is buy-like and wallet-to-pair is sell-like only when pair_address is available; this is not full swap decoding."
       },
       "smart_wallet_hits": [],
       "smart_wallet_hit_count": 0,
       "smart_wallet_cache_status": "active"
+    },
+    {
+      "token": "Jotchua",
+      "chain": "solana",
+      "token_address": "BcHEaaTCvycPwwsJ9yQTXdHP9X2gCLkznDbZ8VySpump",
+      "pair_address": "EDeuGoVFTEUvWZvNGQH6UvSs5uk6RLgKTvr3MgY32ouw",
+      "classification": "主观察",
+      "score": 80,
+      "checked_at": "2026-06-27T23:57:23Z",
+      "status": "signature_sample_only",
+      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
+      "smart_wallet_hits": [],
+      "smart_wallet_hit_count": 0,
+      "smart_wallet_cache_status": "active",
+      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
+    },
+    {
+      "token": "KINS",
+      "chain": "solana",
+      "token_address": "Tqj8yFmagrg7oorpQkVGYR52r96RFTamvWfth9bpump",
+      "pair_address": "F42tZnKPavq1VUcrL6ymhc6YqVpt84fWwgzbNTv2wb3W",
+      "classification": "主观察",
+      "score": 77,
+      "checked_at": "2026-06-27T23:57:23Z",
+      "status": "signature_sample_only",
+      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
+      "smart_wallet_hits": [],
+      "smart_wallet_hit_count": 0,
+      "smart_wallet_cache_status": "active",
+      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
     }
   ],
   "limitations": [
