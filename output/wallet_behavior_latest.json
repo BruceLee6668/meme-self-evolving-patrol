@@ -1,29 +1,13 @@
 {
   "version": "0.5.0-wallet-behavior-prep",
-  "run_time_utc": "2026-07-05T19:21:10Z",
+  "run_time_utc": "2026-07-05T20:53:08Z",
   "status": "checked",
-  "checked_count": 1,
+  "checked_count": 0,
   "bsc_transfer_checked_count": 0,
-  "solana_signature_only_count": 1,
+  "solana_signature_only_count": 0,
   "smart_wallet_hit_count": 0,
   "smart_wallet_cache_status": "active",
-  "results": [
-    {
-      "token": "DADDY",
-      "chain": "solana",
-      "token_address": "4Cnk9EPnW5ixfLZatCPJjDB1PUtcRpVVgTQukm9epump",
-      "pair_address": "zcdAw3jpcqEY8JYVxNVMqs2cU35cyDdy4ot7V8edNhz",
-      "classification": "主观察",
-      "score": 83,
-      "checked_at": "2026-07-05T19:21:10Z",
-      "status": "signature_sample_only",
-      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
-      "smart_wallet_hits": [],
-      "smart_wallet_hit_count": 0,
-      "smart_wallet_cache_status": "active",
-      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
-    }
-  ],
+  "results": [],
   "limitations": [
     "v0.5 BSC只解析ERC20 Transfer样本，不等同于完整Swap路径。",
     "pair_address可用时，pair->wallet视为buy-like，wallet->pair视为sell-like；仍需后续完整Swap/Router/CEX解析。",
