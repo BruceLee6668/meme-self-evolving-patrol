@@ -1,44 +1,13 @@
 {
   "version": "0.5.0-wallet-behavior-prep",
-  "run_time_utc": "2026-07-07T18:58:23Z",
+  "run_time_utc": "2026-07-07T20:50:44Z",
   "status": "checked",
-  "checked_count": 2,
+  "checked_count": 0,
   "bsc_transfer_checked_count": 0,
-  "solana_signature_only_count": 2,
+  "solana_signature_only_count": 0,
   "smart_wallet_hit_count": 0,
   "smart_wallet_cache_status": "active",
-  "results": [
-    {
-      "token": "FISTFLOOR",
-      "chain": "solana",
-      "token_address": "3XJb1BtqeXNNAeAAfCzqF5ReWjok11cnStJdM1Mirise",
-      "pair_address": "3fgmJpi5WgR9jHQF37Lz8UH3DzsydJZsLKRFF4gagw5s",
-      "classification": "主观察",
-      "score": 85,
-      "checked_at": "2026-07-07T18:58:23Z",
-      "status": "signature_sample_only",
-      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
-      "smart_wallet_hits": [],
-      "smart_wallet_hit_count": 0,
-      "smart_wallet_cache_status": "active",
-      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
-    },
-    {
-      "token": "BABYANSEM",
-      "chain": "solana",
-      "token_address": "DLvuaz18bKnh1hEaCZsZ5NgJi7wYFm5RvgZVA2M5pump",
-      "pair_address": "47PkNd3JK4MMyCKwPszbxBnsHbzqHQtLcH71fKnTBnLB",
-      "classification": "主观察",
-      "score": 77,
-      "checked_at": "2026-07-07T18:58:23Z",
-      "status": "signature_sample_only",
-      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
-      "smart_wallet_hits": [],
-      "smart_wallet_hit_count": 0,
-      "smart_wallet_cache_status": "active",
-      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
-    }
-  ],
+  "results": [],
   "limitations": [
     "v0.5 BSC只解析ERC20 Transfer样本，不等同于完整Swap路径。",
     "pair_address可用时，pair->wallet视为buy-like，wallet->pair视为sell-like；仍需后续完整Swap/Router/CEX解析。",
