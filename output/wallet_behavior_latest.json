@@ -1,6 +1,6 @@
 {
   "version": "0.5.0-wallet-behavior-prep",
-  "run_time_utc": "2026-07-10T06:39:37Z",
+  "run_time_utc": "2026-07-10T10:19:45Z",
   "status": "checked",
   "checked_count": 2,
   "bsc_transfer_checked_count": 1,
@@ -9,19 +9,34 @@
   "smart_wallet_cache_status": "active",
   "results": [
     {
-      "token": "SKYAI",
-      "chain": "bsc",
-      "token_address": "0x92aa03137385f18539301349dcfc9ebc923ffb10",
-      "pair_address": "0xbc42145d5a574ede9b8860fca2a49eb7b239efa5",
+      "token": "HOOD",
+      "chain": "solana",
+      "token_address": "h5NciPdMZ5QCB5BYETJMYBMpVx9ZuitR6HcVjyBhood",
+      "pair_address": "9CTxEyRStwTKLfVTS6c7rfQc7PTxY42YPdQcrHTv53Ao",
       "classification": "主观察",
-      "score": 91,
-      "checked_at": "2026-07-10T06:39:36Z",
+      "score": 76,
+      "checked_at": "2026-07-10T10:19:45Z",
+      "status": "signature_sample_only",
+      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
+      "smart_wallet_hits": [],
+      "smart_wallet_hit_count": 0,
+      "smart_wallet_cache_status": "active",
+      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
+    },
+    {
+      "token": "TRIA",
+      "chain": "bsc",
+      "token_address": "0xb0b92de23baa85fb06208277e925ced53edab482",
+      "pair_address": "0x01e1dd31be98b874ee414e5cacfc2b15a624b8968f55f849539d423f36d09b75",
+      "classification": "主观察",
+      "score": 79,
+      "checked_at": "2026-07-10T10:19:45Z",
       "status": "checked",
       "behavior_level": "bsc_transfer_activity_v0.5",
       "activity": {
         "status": "checked",
-        "latest_block": 109125183,
-        "from_block": 109124883,
+        "latest_block": 109154526,
+        "from_block": 109154226,
         "lookback_blocks": 300,
         "raw_log_count": 0,
         "unique_active_wallet_count": 0,
@@ -34,21 +49,6 @@
       "smart_wallet_hits": [],
       "smart_wallet_hit_count": 0,
       "smart_wallet_cache_status": "active"
-    },
-    {
-      "token": "HOOD",
-      "chain": "solana",
-      "token_address": "h5NciPdMZ5QCB5BYETJMYBMpVx9ZuitR6HcVjyBhood",
-      "pair_address": "9CTxEyRStwTKLfVTS6c7rfQc7PTxY42YPdQcrHTv53Ao",
-      "classification": "主观察",
-      "score": 76,
-      "checked_at": "2026-07-10T06:39:37Z",
-      "status": "signature_sample_only",
-      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
-      "smart_wallet_hits": [],
-      "smart_wallet_hit_count": 0,
-      "smart_wallet_cache_status": "active",
-      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
     }
   ],
   "limitations": [
