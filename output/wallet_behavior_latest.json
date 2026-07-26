@@ -1,13 +1,29 @@
 {
   "version": "0.5.0-wallet-behavior-prep",
-  "run_time_utc": "2026-07-26T22:54:49Z",
+  "run_time_utc": "2026-07-26T23:56:14Z",
   "status": "checked",
-  "checked_count": 0,
+  "checked_count": 1,
   "bsc_transfer_checked_count": 0,
-  "solana_signature_only_count": 0,
+  "solana_signature_only_count": 1,
   "smart_wallet_hit_count": 0,
   "smart_wallet_cache_status": "active",
-  "results": [],
+  "results": [
+    {
+      "token": "Cupsey",
+      "chain": "solana",
+      "token_address": "6NwarBvDkXhByqVp2Qkq5i9XbtA2B3Bwe8SWGu9vpump",
+      "pair_address": "DPzKoJVewaH1wpchD3gWKeeGm7G2mXkBW48uRniAgbVx",
+      "classification": "主观察",
+      "score": 78,
+      "checked_at": "2026-07-26T23:56:14Z",
+      "status": "signature_sample_only",
+      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
+      "smart_wallet_hits": [],
+      "smart_wallet_hit_count": 0,
+      "smart_wallet_cache_status": "active",
+      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
+    }
+  ],
   "limitations": [
     "v0.5 BSC只解析ERC20 Transfer样本，不等同于完整Swap路径。",
     "pair_address可用时，pair->wallet视为buy-like，wallet->pair视为sell-like；仍需后续完整Swap/Router/CEX解析。",
