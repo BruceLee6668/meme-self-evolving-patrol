@@ -1,13 +1,44 @@
 {
   "version": "0.5.0-wallet-behavior-prep",
-  "run_time_utc": "2026-07-26T17:58:07Z",
+  "run_time_utc": "2026-07-26T19:13:50Z",
   "status": "checked",
-  "checked_count": 0,
+  "checked_count": 2,
   "bsc_transfer_checked_count": 0,
-  "solana_signature_only_count": 0,
+  "solana_signature_only_count": 2,
   "smart_wallet_hit_count": 0,
   "smart_wallet_cache_status": "active",
-  "results": [],
+  "results": [
+    {
+      "token": "Jimothy",
+      "chain": "solana",
+      "token_address": "Ge87EtsjwRQbHaqQmKRno69RFTwh9bfSsm99XNxTpump",
+      "pair_address": "5PGhKctym6odbHGo2tKMST2AjmJsb2uZBQrKkn4ZuFT5",
+      "classification": "主观察",
+      "score": 87,
+      "checked_at": "2026-07-26T19:13:50Z",
+      "status": "signature_sample_only",
+      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
+      "smart_wallet_hits": [],
+      "smart_wallet_hit_count": 0,
+      "smart_wallet_cache_status": "active",
+      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
+    },
+    {
+      "token": "KET",
+      "chain": "solana",
+      "token_address": "9Pfync3ejPC9eHqVzq3nYQJAhyhjqpnB9UsaSfLxpump",
+      "pair_address": "2TD1fMPg2w7Hjt8bASSdxi92YFNQFgvdznqVApe3NGpn",
+      "classification": "主观察",
+      "score": 77,
+      "checked_at": "2026-07-26T19:13:50Z",
+      "status": "signature_sample_only",
+      "behavior_level": "solana_swap_retention_not_parsed_v0.5",
+      "smart_wallet_hits": [],
+      "smart_wallet_hit_count": 0,
+      "smart_wallet_cache_status": "active",
+      "limitation": "SOL v0.5 keeps address/signature preflight. Full wallet behavior requires Helius enhanced transactions or parsed token balance diffs in the next version."
+    }
+  ],
   "limitations": [
     "v0.5 BSC只解析ERC20 Transfer样本，不等同于完整Swap路径。",
     "pair_address可用时，pair->wallet视为buy-like，wallet->pair视为sell-like；仍需后续完整Swap/Router/CEX解析。",
