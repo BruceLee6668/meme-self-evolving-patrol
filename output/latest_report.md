@@ -1,62 +1,48 @@
 # 自我进化轮巡
 
-**本轮时间 UTC：** 2026-07-30T21:01:43Z
+**本轮时间 UTC：** 2026-07-30T22:59:40Z
 **版本：** 0.5.0-ave-cache-wallet-behavior-prep
 **S0 时间锚点：** 2026-06-16T16:15:17+09:00
 
 ## 一句话结论
-本轮从 122 个合并Token中筛出 2 个主观察候选。v0.5已在v0.4.1基础上增加AVE周缓存真实接口接入框架、Smart Wallet持久保存、wallet_behavior_latest.json，以及BSC Transfer级钱包行为样本。注意：BSC当前是Transfer样本，不等同完整Swap解码。
+本轮从 129 个合并Token中筛出 1 个主观察候选。v0.5已在v0.4.1基础上增加AVE周缓存真实接口接入框架、Smart Wallet持久保存、wallet_behavior_latest.json，以及BSC Transfer级钱包行为样本。注意：BSC当前是Transfer样本，不等同完整Swap解码。
 合约地址可用 25 个，缺失 0 个；缺失地址的候选不能进入后续链上精查。
 
 ## 本轮扫描摘要
 | 指标 | 数量 |
 |---|---:|
-| 原始池子记录 | 223 |
-| 合并后Token | 122 |
+| 原始池子记录 | 241 |
+| 合并后Token | 129 |
 | 输出候选 | 25 |
-| 主观察 | 2 |
-| 次观察 | 0 |
+| 主观察 | 1 |
+| 次观察 | 2 |
 | PVP风险池 | 8 |
 | 成熟池观察 | 4 |
-| 低优先观察 | 11 |
+| 低优先观察 | 10 |
 | 多池Token | 9 |
-| 多池冲突 | 1 |
+| 多池冲突 | 2 |
 | Symbol桥接合并 | 0 |
 | 合约地址可用 | 25 |
 | 合约地址缺失 | 0 |
-| Micro层 | 9 |
-| Early层 | 6 |
+| Micro层 | 8 |
+| Early层 | 7 |
 | Liquid层 | 6 |
 | Mature层 | 3 |
-| 需要链上确认 | 11 |
+| 需要链上确认 | 12 |
 | 紧急精查候选 | 1 |
 
 ## v0.5 数据确认状态
 | 项目 | 状态 |
 |---|---|
 | AVE Smart Wallet周缓存 | active，钱包数 782，刷新时间 2026-07-27T02:07:24Z，是否过期 否 |
-| 链上预检 | 本轮检查 11 个，验证通过 11 个，失败 0 个 |
+| 链上预检 | 本轮检查 12 个，验证通过 12 个，失败 0 个 |
 | Helius状态 | 未配置，SOL使用公共RPC或跳过增强解析 |
 | 当前精查层级 | 0.5.0-chain-preflight-plus-wallet-behavior：地址/账户预检 + v0.5钱包行为样本，完整Swap留存仍待下一版 |
-| 钱包行为样本 | 本轮检查 2 个，BSC Transfer样本 1 个，SOL签名级 1 个，AVE钱包命中 0 个 |
+| 钱包行为样本 | 本轮检查 1 个，BSC Transfer样本 0 个，SOL签名级 1 个，AVE钱包命中 0 个 |
 
 ## 第一部分：生成结果表格
 
 ### A. 上次记录结果表
-| Token | 链 | 合约地址 | 状态 | 核心指标 | 聪明钱包判断 | Smart Money数据来源 | 操作结论 |
-|---|---|---|---|---|---|---|---|
-| CATE | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | 主观察 | Score 78; Tier Early; LP $265.6K; Vol24H $2.11M; 24H -12.99%; V/LP 7.95x; 池数 2; 分项 L13/V16/B17/Buy8/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射；本轮行为未命中AVE缓存钱包 | ave_weekly_cache_available_plus_chain_behavior | 保留主观察，等待链上钱包留存确认；不因代理指标直接买入 |
-| KOMA | BSC | [0xd5ea...7f3c19](https://bscscan.com/token/0xd5eaaac47bd1993d661bc087e15dfb079a7f3c19) | 次观察 | Score 69; Tier Liquid; LP $1.83M; Vol24H $5.21M; 24H +81.30%; V/LP 2.84x; 池数 1; 分项 L20/V17/B0/Buy8/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 次观察，等成交/LP结构继续改善 |
-| [drooling](https://dexscreener.com/solana/2mqyy3lfjcnauyfufynlgtlcxmb6m2shxqgv2mhx7mpy) | SOL | [B6f27E...hmpump](https://solscan.io/token/B6f27ETGcjgGNB1fqULJbXVmw9FnL8HgBp7R83hmpump) | 次观察 | Score 67; Tier Micro; LP $83.4K; Vol24H $334.7K; 24H -5.67%; V/LP 4.01x; 池数 5; 分项 L8/V10/B22/Buy3/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 次观察，等成交/LP结构继续改善 |
-| QQQB | BSC | [0x2058...11efc7](https://bscscan.com/token/0x205812cdbed920aff76c6580abd681a46d11efc7) | PVP风险池 | Score 56; Tier Liquid; LP $3.83M; Vol24H $103.14M; 24H +1.02%; V/LP 26.96x; 池数 1; 分项 L20/V17/B22/Buy3/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| GRVT | BSC | [0x46f2...f91be7](https://bscscan.com/token/0x46f2564e0fa8248d15125e7e54173cfbdef91be7) | PVP风险池 | Score 39; Tier Early; LP $640.3K; Vol24H $23.27M; 24H -57.46%; V/LP 36.34x; 池数 1; 分项 L17/V17/B8/Buy3/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| MarsCoin | BSC | [0xfe18...5c7777](https://bscscan.com/token/0xfe189e97832da1573e4e4ff034f4ffc3a15c7777) | PVP风险池 | Score 33; Tier Early; LP $315.2K; Vol24H $16.87M; 24H +846.87%; V/LP 53.51x; 池数 1; 分项 L14/V17/B0/Buy8/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| BANK | BSC | [0x3aee...ebf2bf](https://bscscan.com/token/0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf) | PVP风险池 | Score 30; Tier Micro; LP $73.9K; Vol24H $5.66M; 24H -60.85%; V/LP 76.69x; 池数 1; 分项 L8/V17/B8/Buy3/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| ChooChoo | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | PVP风险池 | Score 27; Tier Micro; LP $77.5K; Vol24H $8.10M; 24H +632.18%; V/LP 104.55x; 池数 2; 分项 L8/V17/B0/Buy8/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| [Fraudci](https://dexscreener.com/solana/67fxdnxif9xczfunzc2uvarne2h1q2ir8nztrfuhxkvv) | SOL | [3DrBHM...RPpump](https://solscan.io/token/3DrBHMJ1rnWp7mMRNmNbWbp4zNiHkM483GqXSzRPpump) | PVP风险池 | Score 14; Tier Micro; LP $37.0K; Vol24H $6.69M; 24H +405.00%; V/LP 180.86x; 池数 2; 分项 L5/V17/B0/Buy8/Risk-40 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| [Fauci](https://dexscreener.com/solana/2jf324deswftkbfvtzwby8tgedhhncjepai82smx5pfr) | SOL | [3VFnDo...Zepump](https://solscan.io/token/3VFnDoACa991DYe987w354sbvmhqjjzC4Z31SoZepump) | PVP风险池 | Score 10; Tier Micro; LP $48.3K; Vol24H $5.27M; 24H -85.49%; V/LP 109.09x; 池数 1; 分项 L6/V17/B0/Buy3/Risk-40 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-
-### B. 本轮扫描结果表
 | Token | 链 | 合约地址 | 状态 | 核心指标 | 聪明钱包判断 | Smart Money数据来源 | 操作结论 |
 |---|---|---|---|---|---|---|---|
 | [CATE](https://dexscreener.com/solana/hmzvseemtzhhvznw9uwbag85hctmfnkbhzux16cy7ca3) | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | 主观察 | Score 83; Tier Early; LP $272.0K; Vol24H $2.09M; 24H -0.45%; V/LP 7.68x; 池数 2; 分项 L13/V16/B22/Buy8/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射；本轮行为未命中AVE缓存钱包 | ave_weekly_cache_available_plus_chain_behavior | 保留主观察，等待链上钱包留存确认；不因代理指标直接买入 |
@@ -69,51 +55,64 @@
 | [ChooChoo](https://dexscreener.com/solana/fqnvydnyzqn72djh8w1efip7yg85snezszdh7xktepod) | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | PVP风险池 | Score 26; Tier Micro; LP $63.4K; Vol24H $6.43M; 24H +280.00%; V/LP 101.30x; 池数 2; 分项 L7/V17/B0/Buy8/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
 | [Fraudci](https://dexscreener.com/solana/67fxdnxif9xczfunzc2uvarne2h1q2ir8nztrfuhxkvv) | SOL | [3DrBHM...RPpump](https://solscan.io/token/3DrBHMJ1rnWp7mMRNmNbWbp4zNiHkM483GqXSzRPpump) | PVP风险池 | Score 21; Tier Micro; LP $27.9K; Vol24H $5.08M; 24H -68.23%; V/LP 181.91x; 池数 2; 分项 L4/V17/B8/Buy8/Risk-40 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
 | [SASS](https://dexscreener.com/solana/4jy6s7suyvxivwikia2ojmdrx84jmbu8ppftjmvd2zca) | SOL | [ppD2YA...MQpump](https://solscan.io/token/ppD2YACYxh36zS2yDWwMiCkqfQgTukJ9P2a2jMQpump) | PVP风险池 | Score 2; Tier Micro; LP $75.4K; Vol24H $6.36M; 24H +1596.00%; V/LP 84.36x; 池数 5; 分项 L8/V17/B0/Buy8/Risk-55 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
-| [ANSEM](https://dexscreener.com/solana/fnzky6x7entq1er3d225dqyt7ybfka4pskbmqhb8l3cc) | SOL | [9cRCn9...TGpump](https://solscan.io/token/9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump) | 成熟池观察 | Score 80; Tier Liquid; LP $2.01M; Vol24H $1.02M; 24H +6.26%; V/LP 0.51x; 池数 1; 分项 L20/V14/B22/Buy12/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
-| USDT | BSC | [0x55d3...197955](https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955) | 成熟池观察 | Score 71; Tier Mature; LP $17.50M; Vol24H $118.78M; 24H -0.12%; V/LP 6.79x; 池数 1; 分项 L20/V17/B22/Buy0/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
-| [BOME](https://dexscreener.com/solana/dsuvc5qf5ljhhv5e2td184ixotsncnwj7i4jja4xsrmt) | SOL | [ukHH6c...Z74J82](https://solscan.io/token/ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82) | 成熟池观察 | Score 69; Tier Mature; LP $10.60M; Vol24H $2.74M; 24H +11.14%; V/LP 0.26x; 池数 5; 分项 L20/V17/B17/Buy3/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
-| COSM | BSC | [0x0d6a...40f6dc](https://bscscan.com/token/0x0d6ae45c96ec4df860300087462266e19140f6dc) | 成熟池观察 | Score 58; Tier Early; LP $391.5K; Vol24H $425.7K; 24H -9.82%; V/LP 1.09x; 池数 1; 分项 L15/V11/B17/Buy3/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
-| [Brötchen](https://dexscreener.com/solana/74hjkm2dqyvj9koqtw4jbs1ujk7uzkhxytjmbxkfcjlk) | SOL | [9ZtbET...jRpump](https://solscan.io/token/9ZtbETDNjnST9Y2zs82FZYy49xUMPgqXRh46YjjRpump) | 低优先观察 | Score 63; Tier Micro; LP $94.3K; Vol24H $311.7K; 24H -12.99%; V/LP 3.31x; 池数 4; 分项 L9/V10/B17/Buy3/Risk-0 | 钱包级数据不可用；当前仅代理指标；多池数据存在冲突，降置信度；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 低优先观察，不追高 |
+
+### B. 本轮扫描结果表
+| Token | 链 | 合约地址 | 状态 | 核心指标 | 聪明钱包判断 | Smart Money数据来源 | 操作结论 |
+|---|---|---|---|---|---|---|---|
+| CATE | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | 主观察 | Score 83; Tier Early; LP $273.8K; Vol24H $2.15M; 24H -3.76%; V/LP 7.87x; 池数 2; 分项 L13/V16/B22/Buy8/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射；本轮行为未命中AVE缓存钱包 | ave_weekly_cache_available_plus_chain_behavior | 保留主观察，等待链上钱包留存确认；不因代理指标直接买入 |
+| Jimothy | SOL | [Ge87Et...xTpump](https://solscan.io/token/Ge87EtsjwRQbHaqQmKRno69RFTwh9bfSsm99XNxTpump) | 次观察 | Score 72; Tier Early; LP $474.3K; Vol24H $3.65M; 24H -26.32%; V/LP 7.70x; 池数 2; 分项 L15/V17/B8/Buy8/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 次观察，等成交/LP结构继续改善 |
+| KOMA | BSC | [0xd5ea...7f3c19](https://bscscan.com/token/0xd5eaaac47bd1993d661bc087e15dfb079a7f3c19) | 次观察 | Score 69; Tier Liquid; LP $1.84M; Vol24H $5.78M; 24H +83.83%; V/LP 3.15x; 池数 1; 分项 L20/V17/B0/Buy8/Risk-0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 次观察，等成交/LP结构继续改善 |
+| QQQB | BSC | [0x2058...11efc7](https://bscscan.com/token/0x205812cdbed920aff76c6580abd681a46d11efc7) | PVP风险池 | Score 56; Tier Liquid; LP $3.81M; Vol24H $98.24M; 24H +2.71%; V/LP 25.75x; 池数 1; 分项 L20/V17/B22/Buy3/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| GRVT | BSC | [0x46f2...f91be7](https://bscscan.com/token/0x46f2564e0fa8248d15125e7e54173cfbdef91be7) | PVP风险池 | Score 39; Tier Early; LP $650.5K; Vol24H $28.33M; 24H -54.83%; V/LP 43.55x; 池数 1; 分项 L17/V17/B8/Buy3/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| [MET](https://dexscreener.com/solana/3xngdc58axytrj64stqz5trdqwvtwhlr888irbbwznee) | SOL | [METvsv...n6mWQL](https://solscan.io/token/METvsvVRapdj9cFLzq4Tr43xK4tAjQfwX76z3n6mWQL) | PVP风险池 | Score 35; Tier Micro; LP $86.9K; Vol24H $61.83M; 24H -0.57%; V/LP 711.47x; 池数 1; 分项 L9/V17/B22/Buy8/Risk-45 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| MarsCoin | BSC | [0xfe18...5c7777](https://bscscan.com/token/0xfe189e97832da1573e4e4ff034f4ffc3a15c7777) | PVP风险池 | Score 33; Tier Early; LP $314.5K; Vol24H $17.15M; 24H +554.32%; V/LP 54.54x; 池数 1; 分项 L14/V17/B0/Buy8/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| ChooChoo | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | PVP风险池 | Score 26; Tier Micro; LP $60.9K; Vol24H $6.30M; 24H +190.97%; V/LP 103.51x; 池数 2; 分项 L7/V17/B0/Buy8/Risk-30 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| BANK | BSC | [0x3aee...ebf2bf](https://bscscan.com/token/0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf) | PVP风险池 | Score 18; Tier Micro; LP $77.0K; Vol24H $6.06M; 24H -60.10%; V/LP 78.71x; 池数 1; 分项 L8/V17/B8/Buy3/Risk-42 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| [LUNA](https://dexscreener.com/solana/btnwwxtlnpmcz1fhnw6blwdtmue6strxnp1q48anxjxa) | SOL | [H78WEN...1Apump](https://solscan.io/token/H78WENHosTWPFuQvtm8swi83ipTqANJi921iG51Apump) | PVP风险池 | Score 15; Tier Micro; LP $40.3K; Vol24H $5.18M; 24H +747.00%; V/LP 128.76x; 池数 7; 分项 L6/V17/B0/Buy8/Risk-40 | 钱包级数据不可用；当前仅代理指标；多池数据存在冲突，降置信度；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| [SASS](https://dexscreener.com/solana/4jy6s7suyvxivwikia2ojmdrx84jmbu8ppftjmvd2zca) | SOL | [ppD2YA...MQpump](https://solscan.io/token/ppD2YACYxh36zS2yDWwMiCkqfQgTukJ9P2a2jMQpump) | PVP风险池 | Score 1; Tier Micro; LP $59.1K; Vol24H $10.43M; 24H +748.00%; V/LP 176.61x; 池数 5; 分项 L7/V17/B0/Buy8/Risk-55 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 只记录热度，不进入主榜 |
+| [ANSEM](https://dexscreener.com/solana/fnzky6x7entq1er3d225dqyt7ybfka4pskbmqhb8l3cc) | SOL | [9cRCn9...TGpump](https://solscan.io/token/9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump) | 成熟池观察 | Score 75; Tier Liquid; LP $2.03M; Vol24H $938.4K; 24H +10.49%; V/LP 0.46x; 池数 2; 分项 L20/V14/B17/Buy12/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
+| [BOME](https://dexscreener.com/solana/dsuvc5qf5ljhhv5e2td184ixotsncnwj7i4jja4xsrmt) | SOL | [ukHH6c...Z74J82](https://solscan.io/token/ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82) | 成熟池观察 | Score 74; Tier Mature; LP $10.49M; Vol24H $2.74M; 24H +6.04%; V/LP 0.26x; 池数 5; 分项 L20/V17/B22/Buy3/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
+| USDT | BSC | [0x55d3...197955](https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955) | 成熟池观察 | Score 71; Tier Mature; LP $17.50M; Vol24H $118.49M; 24H -0.03%; V/LP 6.77x; 池数 1; 分项 L20/V17/B22/Buy0/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
+| COSM | BSC | [0x0d6a...40f6dc](https://bscscan.com/token/0x0d6ae45c96ec4df860300087462266e19140f6dc) | 成熟池观察 | Score 58; Tier Early; LP $387.0K; Vol24H $420.7K; 24H -16.00%; V/LP 1.09x; 池数 1; 分项 L15/V11/B17/Buy3/Risk-12 | 钱包级数据不可用；当前仅代理指标；资产偏成熟，不按早期吸筹处理；AVE周缓存可用，等待本轮链上行为映射 | ave_weekly_cache_available_plus_chain_behavior | 成熟池观察，不占用早期Alpha主榜 |
 
 ### C. PVP风险池明细表
 | Token | 链 | 合约地址 | 触发原因 | 核心指标 | 处理 |
 |---|---|---|---|---|---|
-| QQQB | BSC | [0x2058...11efc7](https://bscscan.com/token/0x205812cdbed920aff76c6580abd681a46d11efc7) | 24H接近横盘；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP极端偏高 | Score 56; Tier Liquid; LP $3.82M; Vol24H $98.87M; 24H +3.09%; V/LP 25.87x; 池数 1; 分项 L20/V17/B22/Buy3/Risk-30 | 只记录热度，不进入主榜 |
-| GRVT | BSC | [0x46f2...f91be7](https://bscscan.com/token/0x46f2564e0fa8248d15125e7e54173cfbdef91be7) | 24H未过热但已明显波动；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP极端偏高 | Score 39; Tier Early; LP $657.8K; Vol24H $25.79M; 24H -52.77%; V/LP 39.20x; 池数 1; 分项 L17/V17/B8/Buy3/Risk-30 | 只记录热度，不进入主榜 |
-| MarsCoin | BSC | [0xfe18...5c7777](https://bscscan.com/token/0xfe189e97832da1573e4e4ff034f4ffc3a15c7777) | 买卖略偏买入；LP达主观察门槛；24H成交合格；24H涨跌幅过热；Volume/LP极端偏高 | Score 33; Tier Early; LP $332.7K; Vol24H $16.98M; 24H +700.77%; V/LP 51.04x; 池数 1; 分项 L14/V17/B0/Buy8/Risk-30 | 只记录热度，不进入主榜 |
-| [MET](https://dexscreener.com/solana/3xngdc58axytrj64stqz5trdqwvtwhlr888irbbwznee) | SOL | [METvsv...n6mWQL](https://solscan.io/token/METvsvVRapdj9cFLzq4Tr43xK4tAjQfwX76z3n6mWQL) | 24H接近横盘；买卖基本均衡；LP未达主观察门槛；24H成交合格；Volume/LP极端偏高；非主流报价池；FDV超过早期Alpha主榜上限；市值超过早期Alpha主榜上限；成熟大市值 | Score 30; Tier Micro; LP $87.2K; Vol24H $61.83M; 24H +0.19%; V/LP 709.02x; 池数 1; 分项 L9/V17/B22/Buy3/Risk-45 | 只记录热度，不进入主榜 |
-| BANK | BSC | [0x3aee...ebf2bf](https://bscscan.com/token/0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf) | 24H未过热但已明显波动；买卖基本均衡；LP未达主观察门槛；24H成交合格；Volume/LP极端偏高 | Score 30; Tier Micro; LP $71.7K; Vol24H $5.92M; 24H -61.95%; V/LP 82.49x; 池数 1; 分项 L8/V17/B8/Buy3/Risk-30 | 只记录热度，不进入主榜 |
-| [ChooChoo](https://dexscreener.com/solana/fqnvydnyzqn72djh8w1efip7yg85snezszdh7xktepod) | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | 买卖略偏买入；LP未达主观察门槛；24H成交合格；24H涨跌幅过热；Volume/LP极端偏高 | Score 26; Tier Micro; LP $63.4K; Vol24H $6.43M; 24H +280.00%; V/LP 101.30x; 池数 2; 分项 L7/V17/B0/Buy8/Risk-30 | 只记录热度，不进入主榜 |
-| [Fraudci](https://dexscreener.com/solana/67fxdnxif9xczfunzc2uvarne2h1q2ir8nztrfuhxkvv) | SOL | [3DrBHM...RPpump](https://solscan.io/token/3DrBHMJ1rnWp7mMRNmNbWbp4zNiHkM483GqXSzRPpump) | 24H未过热但已明显波动；买卖略偏买入；LP未达主观察门槛；24H成交合格；LP偏薄；Volume/LP极端偏高 | Score 21; Tier Micro; LP $27.9K; Vol24H $5.08M; 24H -68.23%; V/LP 181.91x; 池数 2; 分项 L4/V17/B8/Buy8/Risk-40 | 只记录热度，不进入主榜 |
-| [SASS](https://dexscreener.com/solana/4jy6s7suyvxivwikia2ojmdrx84jmbu8ppftjmvd2zca) | SOL | [ppD2YA...MQpump](https://solscan.io/token/ppD2YACYxh36zS2yDWwMiCkqfQgTukJ9P2a2jMQpump) | 买卖略偏买入；LP未达主观察门槛；24H成交合格；24H涨跌幅过热；Volume/LP极端偏高；年轻币短期暴拉 | Score 2; Tier Micro; LP $75.4K; Vol24H $6.36M; 24H +1596.00%; V/LP 84.36x; 池数 5; 分项 L8/V17/B0/Buy8/Risk-55 | 只记录热度，不进入主榜 |
+| QQQB | BSC | [0x2058...11efc7](https://bscscan.com/token/0x205812cdbed920aff76c6580abd681a46d11efc7) | 24H接近横盘；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP极端偏高 | Score 56; Tier Liquid; LP $3.81M; Vol24H $98.24M; 24H +2.71%; V/LP 25.75x; 池数 1; 分项 L20/V17/B22/Buy3/Risk-30 | 只记录热度，不进入主榜 |
+| GRVT | BSC | [0x46f2...f91be7](https://bscscan.com/token/0x46f2564e0fa8248d15125e7e54173cfbdef91be7) | 24H未过热但已明显波动；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP极端偏高 | Score 39; Tier Early; LP $650.5K; Vol24H $28.33M; 24H -54.83%; V/LP 43.55x; 池数 1; 分项 L17/V17/B8/Buy3/Risk-30 | 只记录热度，不进入主榜 |
+| [MET](https://dexscreener.com/solana/3xngdc58axytrj64stqz5trdqwvtwhlr888irbbwznee) | SOL | [METvsv...n6mWQL](https://solscan.io/token/METvsvVRapdj9cFLzq4Tr43xK4tAjQfwX76z3n6mWQL) | 24H接近横盘；买卖略偏买入；LP未达主观察门槛；24H成交合格；Volume/LP极端偏高；非主流报价池；FDV超过早期Alpha主榜上限；市值超过早期Alpha主榜上限；成熟大市值 | Score 35; Tier Micro; LP $86.9K; Vol24H $61.83M; 24H -0.57%; V/LP 711.47x; 池数 1; 分项 L9/V17/B22/Buy8/Risk-45 | 只记录热度，不进入主榜 |
+| MarsCoin | BSC | [0xfe18...5c7777](https://bscscan.com/token/0xfe189e97832da1573e4e4ff034f4ffc3a15c7777) | 买卖略偏买入；LP达主观察门槛；24H成交合格；24H涨跌幅过热；Volume/LP极端偏高 | Score 33; Tier Early; LP $314.5K; Vol24H $17.15M; 24H +554.32%; V/LP 54.54x; 池数 1; 分项 L14/V17/B0/Buy8/Risk-30 | 只记录热度，不进入主榜 |
+| ChooChoo | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | 买卖略偏买入；LP未达主观察门槛；24H成交合格；24H涨跌幅过热；Volume/LP极端偏高 | Score 26; Tier Micro; LP $60.9K; Vol24H $6.30M; 24H +190.97%; V/LP 103.51x; 池数 2; 分项 L7/V17/B0/Buy8/Risk-30 | 只记录热度，不进入主榜 |
+| BANK | BSC | [0x3aee...ebf2bf](https://bscscan.com/token/0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf) | 24H未过热但已明显波动；买卖基本均衡；LP未达主观察门槛；24H成交合格；Volume/LP极端偏高；FDV超过早期Alpha主榜上限 | Score 18; Tier Micro; LP $77.0K; Vol24H $6.06M; 24H -60.10%; V/LP 78.71x; 池数 1; 分项 L8/V17/B8/Buy3/Risk-42 | 只记录热度，不进入主榜 |
+| [LUNA](https://dexscreener.com/solana/btnwwxtlnpmcz1fhnw6blwdtmue6strxnp1q48anxjxa) | SOL | [H78WEN...1Apump](https://solscan.io/token/H78WENHosTWPFuQvtm8swi83ipTqANJi921iG51Apump) | 买卖略偏买入；LP未达主观察门槛；24H成交合格；24H涨跌幅过热；LP偏薄；Volume/LP极端偏高 | Score 15; Tier Micro; LP $40.3K; Vol24H $5.18M; 24H +747.00%; V/LP 128.76x; 池数 7; 分项 L6/V17/B0/Buy8/Risk-40 | 只记录热度，不进入主榜 |
+| [SASS](https://dexscreener.com/solana/4jy6s7suyvxivwikia2ojmdrx84jmbu8ppftjmvd2zca) | SOL | [ppD2YA...MQpump](https://solscan.io/token/ppD2YACYxh36zS2yDWwMiCkqfQgTukJ9P2a2jMQpump) | 买卖略偏买入；LP未达主观察门槛；24H成交合格；24H涨跌幅过热；Volume/LP极端偏高；年轻币短期暴拉 | Score 1; Tier Micro; LP $59.1K; Vol24H $10.43M; 24H +748.00%; V/LP 176.61x; 池数 5; 分项 L7/V17/B0/Buy8/Risk-55 | 只记录热度，不进入主榜 |
 
 ### D. 成熟池观察明细表
 | Token | 链 | 合约地址 | 触发原因 | 核心指标 | 处理 |
 |---|---|---|---|---|---|
-| [ANSEM](https://dexscreener.com/solana/fnzky6x7entq1er3d225dqyt7ybfka4pskbmqhb8l3cc) | SOL | [9cRCn9...TGpump](https://solscan.io/token/9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump) | 24H接近横盘；买入笔数占优；LP达主观察门槛；24H成交合格；Volume/LP未失真；FDV超过早期Alpha主榜上限；市值超过早期Alpha主榜上限；成熟大市值 | Score 80; Tier Liquid; LP $2.01M; Vol24H $1.02M; 24H +6.26%; V/LP 0.51x; 池数 1; 分项 L20/V14/B22/Buy12/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
-| USDT | BSC | [0x55d3...197955](https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955) | 24H接近横盘；LP达主观察门槛；24H成交合格；Volume/LP未失真；卖出笔数占优；LP超过早期Alpha主榜上限；FDV超过早期Alpha主榜上限；市值超过早期Alpha主榜上限；成熟大池；成熟大市值 | Score 71; Tier Mature; LP $17.50M; Vol24H $118.78M; 24H -0.12%; V/LP 6.79x; 池数 1; 分项 L20/V17/B22/Buy0/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
-| [BOME](https://dexscreener.com/solana/dsuvc5qf5ljhhv5e2td184ixotsncnwj7i4jja4xsrmt) | SOL | [ukHH6c...Z74J82](https://solscan.io/token/ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82) | 24H波动可控；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP未失真；LP超过早期Alpha主榜上限；成熟大池 | Score 69; Tier Mature; LP $10.60M; Vol24H $2.74M; 24H +11.14%; V/LP 0.26x; 池数 5; 分项 L20/V17/B17/Buy3/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
-| COSM | BSC | [0x0d6a...40f6dc](https://bscscan.com/token/0x0d6ae45c96ec4df860300087462266e19140f6dc) | 24H波动可控；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP未失真；FDV超过早期Alpha主榜上限；成熟大市值 | Score 58; Tier Early; LP $391.5K; Vol24H $425.7K; 24H -9.82%; V/LP 1.09x; 池数 1; 分项 L15/V11/B17/Buy3/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
+| [ANSEM](https://dexscreener.com/solana/fnzky6x7entq1er3d225dqyt7ybfka4pskbmqhb8l3cc) | SOL | [9cRCn9...TGpump](https://solscan.io/token/9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump) | 24H波动可控；买入笔数占优；LP达主观察门槛；24H成交合格；Volume/LP未失真；FDV超过早期Alpha主榜上限；市值超过早期Alpha主榜上限；成熟大市值 | Score 75; Tier Liquid; LP $2.03M; Vol24H $938.4K; 24H +10.49%; V/LP 0.46x; 池数 2; 分项 L20/V14/B17/Buy12/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
+| [BOME](https://dexscreener.com/solana/dsuvc5qf5ljhhv5e2td184ixotsncnwj7i4jja4xsrmt) | SOL | [ukHH6c...Z74J82](https://solscan.io/token/ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82) | 24H接近横盘；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP未失真；LP超过早期Alpha主榜上限；成熟大池 | Score 74; Tier Mature; LP $10.49M; Vol24H $2.74M; 24H +6.04%; V/LP 0.26x; 池数 5; 分项 L20/V17/B22/Buy3/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
+| USDT | BSC | [0x55d3...197955](https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955) | 24H接近横盘；LP达主观察门槛；24H成交合格；Volume/LP未失真；卖出笔数占优；LP超过早期Alpha主榜上限；FDV超过早期Alpha主榜上限；市值超过早期Alpha主榜上限；成熟大池；成熟大市值 | Score 71; Tier Mature; LP $17.50M; Vol24H $118.49M; 24H -0.03%; V/LP 6.77x; 池数 1; 分项 L20/V17/B22/Buy0/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
+| COSM | BSC | [0x0d6a...40f6dc](https://bscscan.com/token/0x0d6ae45c96ec4df860300087462266e19140f6dc) | 24H波动可控；买卖基本均衡；LP达主观察门槛；24H成交合格；Volume/LP未失真；FDV超过早期Alpha主榜上限；成熟大市值 | Score 58; Tier Early; LP $387.0K; Vol24H $420.7K; 24H -16.00%; V/LP 1.09x; 池数 1; 分项 L15/V11/B17/Buy3/Risk-12 | 成熟池观察，不占用早期Alpha主榜 |
 
 ### E. 链上确认/紧急精查表
 | Token | 链 | 合约地址 | 是否需要链上确认 | 紧急精查 | 预检状态 | 原因 |
 |---|---|---|---|---|---|---|
-| [CATE](https://dexscreener.com/solana/hmzvseemtzhhvznw9uwbag85hctmfnkbhzux16cy7ca3) | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | 是 | 是 | verified / address_preflight_v0.4 | 观察池候选需要链上Swap/钱包留存确认；满足紧急精查候选：LP合格、低波动、买盘占优、非多池冲突 |
+| CATE | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | 是 | 是 | verified / address_preflight_v0.4 | 观察池候选需要链上Swap/钱包留存确认；满足紧急精查候选：LP合格、低波动、买盘占优、非多池冲突 |
+| Jimothy | SOL | [Ge87Et...xTpump](https://solscan.io/token/Ge87EtsjwRQbHaqQmKRno69RFTwh9bfSsm99XNxTpump) | 是 | 否 | verified / address_preflight_v0.4 | 观察池候选需要链上Swap/钱包留存确认 |
 | KOMA | BSC | [0xd5ea...7f3c19](https://bscscan.com/token/0xd5eaaac47bd1993d661bc087e15dfb079a7f3c19) | 是 | 否 | verified / address_preflight_v0.4 | 观察池候选需要链上Swap/钱包留存确认 |
-| [Brötchen](https://dexscreener.com/solana/74hjkm2dqyvj9koqtw4jbs1ujk7uzkhxytjmbxkfcjlk) | SOL | [9ZtbET...jRpump](https://solscan.io/token/9ZtbETDNjnST9Y2zs82FZYy49xUMPgqXRh46YjjRpump) | 是 | 否 | verified / address_preflight_v0.4 | 多池数据冲突，需链上/聚合源复核 |
 | QQQB | BSC | [0x2058...11efc7](https://bscscan.com/token/0x205812cdbed920aff76c6580abd681a46d11efc7) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
+| [Brötchen](https://dexscreener.com/solana/74hjkm2dqyvj9koqtw4jbs1ujk7uzkhxytjmbxkfcjlk) | SOL | [9ZtbET...jRpump](https://solscan.io/token/9ZtbETDNjnST9Y2zs82FZYy49xUMPgqXRh46YjjRpump) | 是 | 否 | verified / address_preflight_v0.4 | 多池数据冲突，需链上/聚合源复核 |
 | GRVT | BSC | [0x46f2...f91be7](https://bscscan.com/token/0x46f2564e0fa8248d15125e7e54173cfbdef91be7) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
-| MarsCoin | BSC | [0xfe18...5c7777](https://bscscan.com/token/0xfe189e97832da1573e4e4ff034f4ffc3a15c7777) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
 | [MET](https://dexscreener.com/solana/3xngdc58axytrj64stqz5trdqwvtwhlr888irbbwznee) | SOL | [METvsv...n6mWQL](https://solscan.io/token/METvsvVRapdj9cFLzq4Tr43xK4tAjQfwX76z3n6mWQL) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
+| MarsCoin | BSC | [0xfe18...5c7777](https://bscscan.com/token/0xfe189e97832da1573e4e4ff034f4ffc3a15c7777) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
+| ChooChoo | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
 | BANK | BSC | [0x3aee...ebf2bf](https://bscscan.com/token/0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
-| [ChooChoo](https://dexscreener.com/solana/fqnvydnyzqn72djh8w1efip7yg85snezszdh7xktepod) | SOL | [GB68eE...Bupump](https://solscan.io/token/GB68eELgf864nrQHjNvrXHF6Xywpp1kYsb7fsGBupump) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
-| [Fraudci](https://dexscreener.com/solana/67fxdnxif9xczfunzc2uvarne2h1q2ir8nztrfuhxkvv) | SOL | [3DrBHM...RPpump](https://solscan.io/token/3DrBHMJ1rnWp7mMRNmNbWbp4zNiHkM483GqXSzRPpump) | 是 | 否 | verified / address_preflight_v0.4 | PVP候选仅记录，非紧急精查 |
 
 ### F. 钱包行为 / AVE命中样本表
 | Token | 链 | 合约地址 | 行为状态 | 行为层级 | AVE命中 | 判断 |
 |---|---|---|---|---|---:|---|
-| [CATE](https://dexscreener.com/solana/hmzvseemtzhhvznw9uwbag85hctmfnkbhzux16cy7ca3) | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | signature_sample_only | solana_swap_retention_not_parsed_v0.5 | 0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射；本轮行为未命中AVE缓存钱包 |
-| KOMA | BSC | [0xd5ea...7f3c19](https://bscscan.com/token/0xd5eaaac47bd1993d661bc087e15dfb079a7f3c19) | checked | bsc_transfer_activity_v0.5 | 0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射；本轮行为未命中AVE缓存钱包 |
+| CATE | SOL | [Ai66LH...5ppump](https://solscan.io/token/Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump) | signature_sample_only | solana_swap_retention_not_parsed_v0.5 | 0 | 钱包级数据不可用；当前仅代理指标；AVE周缓存可用，等待本轮链上行为映射；本轮行为未命中AVE缓存钱包 |
 
 ## 第二部分：逻辑复盘表格
 
@@ -129,11 +128,11 @@
 ### B. 本轮逻辑总结表
 | 逻辑项 | 本轮结果 | 判断 |
 |---|---|---|
-| 主观察候选 | 2 个 | 主榜继续稀缺，但必须结合合约地址进入链上确认 |
+| 主观察候选 | 1 个 | 主榜继续稀缺，但必须结合合约地址进入链上确认 |
 | PVP风险池 | 8 个 | v0.3已单独展示明细，便于判断噪声来源 |
 | 成熟池观察 | 4 个 | 成熟资产不占早期Alpha主榜 |
 | 合约地址覆盖 | 可用 25，缺失 0 | 地址缺失会阻断BSC RPC/Helius精查，需要优先补齐 |
-| LP层级 | Micro 9 / Early 6 / Liquid 6 / Mature 3 | 下一步可以按层级分别设置进攻规则 |
+| LP层级 | Micro 8 / Early 7 / Liquid 6 / Mature 3 | 下一步可以按层级分别设置进攻规则 |
 | S0对比 | 尚未做精确历史回放 | 后续用GeckoTerminal OHLCV / 链上数据补齐 |
 | 链上确认 | v0.5执行地址/账户预检 + BSC Transfer级钱包行为样本 | 可以初步看到活跃钱包/缓存命中，但仍不能替代完整Swap留存判断 |
 | Smart Money | AVE周缓存 + 代理指标 | 无具体钱包映射前，不允许标记真实吸筹 |
@@ -171,7 +170,7 @@
 |---|---|
 | dexscreener_profiles | {'ok': True, 'count': 30, 'expanded': 30} |
 | dexscreener_boosts | {'ok': True, 'count': 30, 'expanded': 25} |
-| dexscreener_search | {'ok': True, 'count': 331} |
+| dexscreener_search | {'ok': True, 'count': 332} |
 | geckoterminal_bsc_trending | {'ok': True, 'count': 20} |
 | geckoterminal_solana_trending | {'ok': True, 'count': 20} |
 
