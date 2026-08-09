@@ -1,6 +1,6 @@
 {
   "version": "0.5.0-chain-preflight-plus-wallet-behavior",
-  "run_time_utc": "2026-08-09T16:27:45Z",
+  "run_time_utc": "2026-08-09T17:25:39Z",
   "checked_count": 12,
   "verified_count": 12,
   "failed_count": 0,
@@ -9,13 +9,31 @@
   "helius_configured": false,
   "results": [
     {
+      "token": "Broccoli",
+      "chain": "bsc",
+      "token_address": "0x6d5ad1592ed9d6d1df9b93c793ab759573ed6714",
+      "classification": "主观察",
+      "score": 85,
+      "emergency_precision_check": true,
+      "verified_at": "2026-08-09T17:25:36Z",
+      "verify_level": "address_preflight_v0.4",
+      "swap_retention_parsed": false,
+      "status": "verified",
+      "bsc_contract": {
+        "ok": true,
+        "contract_exists": true,
+        "rpc_reachable": true,
+        "error": null
+      }
+    },
+    {
       "token": "CATE",
       "chain": "solana",
       "token_address": "Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
       "classification": "主观察",
       "score": 84,
       "emergency_precision_check": true,
-      "verified_at": "2026-08-09T16:27:42Z",
+      "verified_at": "2026-08-09T17:25:36Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -30,11 +48,11 @@
         "ok": true,
         "signature_sample_count": 5,
         "latest_signatures": [
-          "2BjrGdwHcU3M444SzrQanJHto7dw3U4r3dByDfB6YVYJqPmpsnScH5Q6qMZCAMmFD7q3npuXgiWrkevFmmpDYz1G",
-          "4aZJmvfYuCfYaw5H9faJLtwEtKiBqxNdWyE8Qd27WjnbY4QuUjbbtFjtybS9DGZxh9CuTg94kP2qxudpRJuJf86f",
-          "2DVNVdcHgTtgKiPBEdDo3YUanXovAT1A53nLXWoZiCrnSXM8rWYnYX5UihrHxtASTbHWqgHpVLoPHjamEysEzcxt",
-          "4md8zzadqh6JG3P7bJBwAGmNEHZuT68tcu2dRGbinqknXYXsB8AizgRAEWjYbPBKobGwXWHZW334drvuu6Xk9Hg1",
-          "3jUW2HSTgqMnoY841hHuzdQ1yZeWShsHXZfkz9FzgVP3z3k7eF5Uv4gWkq5Het45PbG1mfa9g7ozPKNjjXQmEzs9"
+          "3Ce3DoD5piqxohVZuetLVq8hgYA1DZAtD77qTBE2mJX3NHN2P8ju5mArWhZdK8Vf7g1WiUeMgQAPUbAJSJXdph6i",
+          "2CStiPSpxcojV1LtZNqu4p3XZuc82nfmU2SRjwnkf7Gbv4cmeVqPXyHKcHLqg2nF7XR9JL3gA3W86jLcw3tAy6xs",
+          "4S238writ7NHGo8a2bHaSZpidKN8hfEHLnzffnnFWDaiCtdEsCgHKG56CjXLcVJcRVeP8Ng5PQgV41WB4WAtPAtz",
+          "42T1uX1G8Tp6T3g4GFXcU1pgtLD5Yf971zXnSyvUCyEBMhN1TrKxf9eqdkKqKqEUqspAawyeyhWywMSyNgecwXHt",
+          "2vAP2TbfqW7tXA4zBj52NigbD44cWmCS9CyBgwgSdvoHStJDb1BYhvCDTuk8kXoPsPu2JVHCEE5zuG9jBka3MPBL"
         ]
       },
       "helius_used": false
@@ -46,7 +64,7 @@
       "classification": "主观察",
       "score": 81,
       "emergency_precision_check": true,
-      "verified_at": "2026-08-09T16:27:42Z",
+      "verified_at": "2026-08-09T17:25:37Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -58,35 +76,22 @@
       }
     },
     {
-      "token": "PUMP",
-      "chain": "solana",
-      "token_address": "9593dFjsLKKRAaz4LX1eK2DDEgrzfu3idb6yvMysD6A1",
+      "token": "CAP",
+      "chain": "bsc",
+      "token_address": "0x99991c6aabba5a096f24f250b73580f5179b9999",
       "classification": "主观察",
-      "score": 80,
+      "score": 85,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:42Z",
+      "verified_at": "2026-08-09T17:25:37Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
-      "solana_account": {
+      "bsc_contract": {
         "ok": true,
-        "account_exists": true,
+        "contract_exists": true,
         "rpc_reachable": true,
-        "owner": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
         "error": null
-      },
-      "solana_signature_sample": {
-        "ok": true,
-        "signature_sample_count": 5,
-        "latest_signatures": [
-          "4b5JwnP1Kvg4sPSobNZzYzwhM8eBtTHKVPKxwPLKfmFnRkfetas98ThtVjWBobz8zq7FiR9RB4dNdmuQDmePj19m",
-          "2qMAB5LsdWMRcVsAZh4RyrCyWSsCDFjU5E5ek2N2Jf3R6eE4wBaHTYqf8BCiYHnbum4SJ9VsHYbDdw7RU3BhvEmz",
-          "4NHbb6ygioBNZFdrk5UyMkd5Hf5q2K6wdEfA1D3gwVtuXhiBL75X5GqpxaJ1VW2q7VkJ6ZZKEAQvx9wZTE6Fn2W8",
-          "5P4BXgpF4xaNwnSkCvS8dTDbqURTfHDopWJ5QNnkTJ2xcpTcr7PML4YQJhEKf1WC3BfvY59uwR6GkQLFj76zRQSk",
-          "4dCGU89PzDbYtqX8pYYgpdw7oiriWYak9HynTEqGaig8GRxHM6hFMZsQx9ijhcUKVBkh1tXh29gGcAniruPxMGYF"
-        ]
-      },
-      "helius_used": false
+      }
     },
     {
       "token": "mubarak",
@@ -95,43 +100,7 @@
       "classification": "主观察",
       "score": 77,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:43Z",
-      "verify_level": "address_preflight_v0.4",
-      "swap_retention_parsed": false,
-      "status": "verified",
-      "bsc_contract": {
-        "ok": true,
-        "contract_exists": true,
-        "rpc_reachable": true,
-        "error": null
-      }
-    },
-    {
-      "token": "POWER",
-      "chain": "bsc",
-      "token_address": "0x9dc44ae5be187eca9e2a67e33f27a4c91cea1223",
-      "classification": "次观察",
-      "score": 75,
-      "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:43Z",
-      "verify_level": "address_preflight_v0.4",
-      "swap_retention_parsed": false,
-      "status": "verified",
-      "bsc_contract": {
-        "ok": true,
-        "contract_exists": true,
-        "rpc_reachable": true,
-        "error": null
-      }
-    },
-    {
-      "token": "Broccoli",
-      "chain": "bsc",
-      "token_address": "0x6d5ad1592ed9d6d1df9b93c793ab759573ed6714",
-      "classification": "次观察",
-      "score": 75,
-      "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:43Z",
+      "verified_at": "2026-08-09T17:25:37Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -149,7 +118,7 @@
       "classification": "次观察",
       "score": 74,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:43Z",
+      "verified_at": "2026-08-09T17:25:38Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -164,11 +133,11 @@
         "ok": true,
         "signature_sample_count": 5,
         "latest_signatures": [
-          "27gRGogEBXvmQwHXoJVwBvzqNvxb3ANBg58rdKjwv3wXFsXsShy4jBzAyhTJkrtegAZkEJqLyKyoHAL7qagjYFXt",
-          "67T5mGMMoEi7EKKJYccTjxrUszuC3kSnt3ALWCevXZdkxnWzdjdtvBNc1237mL9DdkgchEvVETXvK2uxiRo14Xh9",
-          "2M4t4tQcqR8jMujS6UdxGf36vhBSFT8FfeB5yrxjuJpJGNyqb2kDfKEe4uxC2GvzgD5sz1XMu9Z5gy7UWFxMgXvK",
-          "5WcC9myQePspsjwF5oaDtebnV7D9erDKtpZR5ZHgifYsWmDZ2D6S5yCCkQaXSX4kggb4GhBEWMFQE4EAaLNzpKYz",
-          "5W98ruFkKHmaXoTk98eD51sTJFzNB8DmaWSoodDtAUk6GiRpJJdPfgXwLzFLH8QGq3EhogYNZjj3C2kDYjoU2MML"
+          "4scVnBsm4jzuCDd3BQaBZT2DoZEi8525cE9oFuwYiL4fVXXyPEBRdpN6swzqGxqJmYA3feRBpAYSKL3PfzpLW5Eh",
+          "45w8QjdVa6ZinhMWXRjjBXtTtxadNMXGpqhu6b8MMGGZyn3L8QsEWxWSjTu1UbGHjG67sE2YGTFGDGzf2Q5bTnbA",
+          "4mmmBHZTkdUwaMgeH5YK15XCn29VMAiauSHdsiPctYbPKS2fkdV7gRZtD1jRJzgFyiR4dB7WKPepnbepEV94qmMb",
+          "FpuuvWpVTtWNjfWe8g67vJvSiP6XJezGqJ7MuoKScY6okNoR1fpn1Vb4WTuzJquwcjMJVipQ8RqKdMo7MAum86p",
+          "4AN1jTgNesXCx5G2XMgfmuBvmASBvZ7c52zfQeEnNKuxirp4PKBjKuKi8KLXsJbsrEewxvcPwLJuFe8ANGy2wv8x"
         ]
       },
       "helius_used": false
@@ -180,7 +149,7 @@
       "classification": "次观察",
       "score": 73,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:44Z",
+      "verified_at": "2026-08-09T17:25:38Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -195,11 +164,42 @@
         "ok": true,
         "signature_sample_count": 5,
         "latest_signatures": [
-          "4CJ9L9xFcoRqdfRo8anWDasciNxJBgYzz9YK5Err3YFfQQejYR1wXK4egvyuKsxXVuxcNMz2xXogSrcJnJreJVfX",
-          "4aWsp2E3B5qXd1tqhY6f5AhrtLjnvCuHchAXZkU6gpjRrVUzoTfHs2xoyy7So1X5EZ8QyeJT3jpA4NEnmvqoUNMo",
-          "2ix5tbLAfX3eiLqkZVjFoYh9pTTLpdijhJ9Za3vCTWbmoy5FB3Bosdcyq38zdPFgR9XunEsntrosLfwg84a6QRNP",
-          "3g7zrrjzwNC3CigpoEtbBai4PnRYJmDBcxBrW4eXA5QRa8EmvqsX3ZT4F3gGumv6hfTGvSBMzXg1XzaVYMjbn67J",
-          "tcxTyL1xUA2EqJSgsMWUSraNvhQRJB6duLhkdjQM4MGNdfisW8DCLkmwupPAA3GwnRyJN43qaotSkzX7DCJNCAx"
+          "5FC9K11gpMjQpRXZM2SG3cwB8CTp8sqzeQU9keuTFKkwRm9HqPh7gcdpANbyGkEB95w4VworP8Wu1oavJF9ruJsg",
+          "3QaDBFtXqNFxYGGrjQzjpkNhw3DpFy71vfqJdCK3EXUfWo6s3swsnQqERxcBGCjDFVhLjkMpT8nFNX245Q6aQNGn",
+          "4ctzkzGzaZ8SPWoxbSzepSbZxHLuBr6FZC9EZmbVgMoccy15uudWDcgmZ3SwfNYJG5ncLaKaBY2xjHtGpWsKyiBd",
+          "2b239r9jU1D63Fdb6eMF3RptVvyhhL2r4ZbgPxYYCpcxTa6qw6S1PVQ5Br5496tiva2WH4CtajXuPQV6yniWQZ6R",
+          "H5VXDipr8n8TQbd4DUPmh82ax5Y5TzeqQ9xw34yTKryvYiWoCSVjL54oX7gVVHV65hHtZALpSTHU61jvT49Prs7"
+        ]
+      },
+      "helius_used": false
+    },
+    {
+      "token": "Jimothy",
+      "chain": "solana",
+      "token_address": "Ge87EtsjwRQbHaqQmKRno69RFTwh9bfSsm99XNxTpump",
+      "classification": "次观察",
+      "score": 73,
+      "emergency_precision_check": false,
+      "verified_at": "2026-08-09T17:25:38Z",
+      "verify_level": "address_preflight_v0.4",
+      "swap_retention_parsed": false,
+      "status": "verified",
+      "solana_account": {
+        "ok": true,
+        "account_exists": true,
+        "rpc_reachable": true,
+        "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+        "error": null
+      },
+      "solana_signature_sample": {
+        "ok": true,
+        "signature_sample_count": 5,
+        "latest_signatures": [
+          "4cxt4U6DGzXFQnEew3VUA2EEY9XF1YYhpqEPPjhhF1wCnCfAzBxbZ7NixEf1TJ1B6okgDusDf9US43vgMHvgAQyd",
+          "5v45Ye5M5JiNzihRjvJYjoZYAzACG97v1TSSohnXSv4TGDte69fTkKt7XY9Cbth6R7rc1xCv55TNcgqvFfYY9UPk",
+          "4BeopAXWeikgnrbJFSbPUwKzy1KNU4ipXiEnNSqo48UF9oNfdXcRkgLv698Xqt8uUhTsnaMgYEjyApFwzctQyNWj",
+          "3Wo7NL7Ku3kJXo22YEZRJ3VFVbVg9z8fC8pz4ghbNfgZv1fGVfVqRcNY7s3b3XQkUg5pfYLirr6b5eQWPYQhZTk9",
+          "4FfzRodWS4HWPthcYPfpKv5M2VfbXWybJKC7WEWCkCCrWn37i15KEV31cuT4GxBEmb624caX1T6ecDm5nrC23Pks"
         ]
       },
       "helius_used": false
@@ -211,7 +211,7 @@
       "classification": "次观察",
       "score": 71,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:44Z",
+      "verified_at": "2026-08-09T17:25:38Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -226,11 +226,11 @@
         "ok": true,
         "signature_sample_count": 5,
         "latest_signatures": [
-          "3HV7dJATQY9gbXEscvk89kjYcgmYp5s7tHiugp9Q4su21vuwVVQ3FHqFhinMa6YorBtAh7kMYAQchyCnzFXMLZok",
-          "pXGy8uHpxZmDiMJ2n7fWv1z55pWkaadiMwmK9EYspdB4LgJTjts3iUHDKTvi42pZwqBV2P4W5amwXB2zzB2jFQs",
-          "5fYMzkHXxDWmY4XjM4WyHRv5M9AfUbKRe6Urvm7L9ReG7WeMSjunss9XHUv3TBXtmVr4cL7GXQKXJEJqnnVoCtA1",
-          "4UxXqPGHzch3m5EGV98SgpgSnV5FBN8qN2vnawi6GZZHsNmEmC2DKKJUuYPgX4jD5bjoE7sVPqGJSh3kYDcoCB3n",
-          "2hX3mkUySAKZPPx8pVRh2pQc9ATDjZTubHznhT2V9VWcU1kjGsnmJkePWxz9xZjtoxySvymAukBNz8Bq18MwtSqE"
+          "66RUXkf3aZWoKJqEuM53v5uUeGnHrrqpwZLex8WDXS7tyWHf6oYDLFF91Wzje3ajFenW7915712bq8MRcrXdvcPX",
+          "2JXrCEER6hY3khUfgLCPWjb5nz9WgWAsHPMETJg1ScXBd6W6qqNjCNFEuwkLQiQLR5ebRjNpEGaPV46ES3MwmoyX",
+          "AJvwKZm1zqzePAKSfqTgUh96AServLUzEdH9RtdPvvfheN8BcWt2R9Skpx7TPqnZtbvya23NMxdWH6a5cPd1URL",
+          "5MwQxJaDEXNMDiCH5Um6sTx63Vaypz7Nz2dhuqsggeUCrBXbNoKjkLC2vWEb7pCuaBGqUJfFXmom7KpWMerS9v9R",
+          "29PGF2Tj3ePfYy1uHU6A4UH3LX17SWN6AXwWN92LRQUxHr39TduxSXmwETHGypjuikPquKLmTKbgs5f6tQPvgxSw"
         ]
       },
       "helius_used": false
@@ -239,10 +239,10 @@
       "token": "drooling",
       "chain": "solana",
       "token_address": "B6f27ETGcjgGNB1fqULJbXVmw9FnL8HgBp7R83hmpump",
-      "classification": "次观察",
-      "score": 68,
+      "classification": "低优先观察",
+      "score": 63,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:44Z",
+      "verified_at": "2026-08-09T17:25:38Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -257,11 +257,11 @@
         "ok": true,
         "signature_sample_count": 5,
         "latest_signatures": [
-          "2GJLb8FK6vHexo1Y5em9zNQmx3MTQV7aWwMb7iW7V1mMGjukYPSKUr9G7iCkRDuzzTzQJkhK2b3zJnaRiss7k6Nu",
-          "4ZwLbyp4pwP292t1R7rRBTqNDAHAv2NmPeh9epXA3YemcJ9CFt1gAw3To66PSSEoYPunsVpRzYTzwhWmL9FqbZXg",
-          "4C1uRc6qs16JEiSRKZ5dHFHYtnNR6vntovqryvFUcDw9xfv1KGxurDBFzphLguEpTopPucUpzjbxTZmyz1hB6Zf6",
-          "oY2CSCjoyfFjbtQKAW5KQDg7CwFXetDS7xhKx9tEmKuWiTQsGZS4fALQQLSyL77v45vBqPcK6vndWNKqNVpJQVW",
-          "4YpbZ8xLVJwVSUR84BENfgyGvxzo1R1BqbTXU4N9SxV6iEagtSNP2CGRjG31diWec8rB244Eb95mioSGb64dniSo"
+          "z9yPcZks2YB9Q892yyFnrpzZntsxDCJRKW186EXing5wtFAr4KE9y21st686Rp8e5tD8KL95YtEh8fCbvHgkdod",
+          "4C2cHbnrx3RVTJxpXVyUEDcSdmi9c6919upfsD7ZDe68tYsogMpSqnBhkU8YGZFARXHaeCY7H6P82wJPK4ERnCvH",
+          "2RBzjRZT8EqHskcQB8aKtrz9n5CoscCQu2amBgZkBpDQyRqwGQEQXrZGczuJLsvnzf42oBiKUszEwyKhS8aVAW5C",
+          "dH29Ak16azDim25DSN6iNPk3NDW19E42F7XPcHjRGyjr91negV6j5DFoNSuEQqRiYtQvMzBPmmQn87txTQoHfTH",
+          "5EyxchWbfJactCzgkX9q3b8fnkoURY63Az4n1n9qF8fQYxXUN99QArWerXnso3YXri3TgkMy5th896gLUvBriEDA"
         ]
       },
       "helius_used": false
@@ -273,7 +273,7 @@
       "classification": "PVP风险池",
       "score": 42,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:45Z",
+      "verified_at": "2026-08-09T17:25:39Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
@@ -288,32 +288,45 @@
         "ok": true,
         "signature_sample_count": 5,
         "latest_signatures": [
-          "PGFT41eeNv18rEep72aEkeickF53mfsqSpnmqmkq3pGywKozqCJyZ37wQUvdhY6xjNmTDksmWH63wEMCfiwTtpg",
-          "3L6XK1xWdJBeyLvGjpHsiEUTU4nsntjMGEKTSVUPUHhbxDzV9ZkLGuRaz4RaLxnAho3QPELT3bWBeCnSxquBx5Ax",
-          "49uHhAbwS7e6QtYNLwiC4qUrXePCti8ZK5PEsZyC4YahWEeT3x4AKm5znhuZ93meFnUhwZwSg8TwdjsDVL2UUp1X",
-          "2TUE6guvGYxo3rNsZZn13jWS2Fn5Ga7rvF3j2LdZUP7H829GrNwX8mnZuWutoMgAcx7VEPmXP7k8Z13A1VkhzJiN",
-          "2kRhf3accUfpQhKrbLB8niYK7ih63WzwzCZ8eLLG5RDE8keS1jDjFhHu586x7AWJCy3RYypCwvNZe592iXKcoyCF"
+          "2nLmsGXZ7Rb7ksom6r1DaLMGx3JnERimahc4vkMXdZbKcQhdW9ytXJQo5giSqc9PRHJbM2ZHC6n4YC77uXnAY8EC",
+          "2aprXMjydhXoBM5g4ha4ftZrf48HTE8EdBGwoLbDwLUtUXzkx3PGT8FJw1JNuxLZnAiduiq9hFfCpd9CeHUJE9eG",
+          "62pd8BATfZmtRmeK9aoJjG4zbrfCdAD4mgBC2fPqBw2pCiisDAxGYdiZuf2AxH9FhoQub1k9pK6p2xwH6ZZrGpC4",
+          "54bhnTGJx6VAVovDTT4X3fLKEvp95oJx9VYQFN69tMK4nvDm3zEWPUnkoDtJCSNG9jbecLTPrZDnb5JEdsM7qR8o",
+          "5kX1Xb2dVMrNxXha2m5ietmptQYrWQXuRwU6qvNPgBZ6x6WW4nxDVZKQVrtXTxEBMFQjD3vMVM48RK3PVPJ7Syk4"
         ]
       },
       "helius_used": false
     },
     {
-      "token": "ClipX",
-      "chain": "bsc",
-      "token_address": "0xc269d59a0d608ea0bd672f2f4616c372d8554444",
+      "token": "sling",
+      "chain": "solana",
+      "token_address": "EeB76LHyVZPMRvTpLcxJqqfSz4gg9f9XgsUmFybcpump",
       "classification": "PVP风险池",
-      "score": 41,
+      "score": 36,
       "emergency_precision_check": false,
-      "verified_at": "2026-08-09T16:27:45Z",
+      "verified_at": "2026-08-09T17:25:39Z",
       "verify_level": "address_preflight_v0.4",
       "swap_retention_parsed": false,
       "status": "verified",
-      "bsc_contract": {
+      "solana_account": {
         "ok": true,
-        "contract_exists": true,
+        "account_exists": true,
         "rpc_reachable": true,
+        "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
         "error": null
-      }
+      },
+      "solana_signature_sample": {
+        "ok": true,
+        "signature_sample_count": 5,
+        "latest_signatures": [
+          "EdUxXgABGnZmfQbpmacH89Vsqc89jZqrijEEU85CkYf4bQoA3H5j7fegcEVFDiMMq5kcp1Mr4hSybEhUvDxmEGw",
+          "2ckTFgALYbbEXMB9z8AjD36gt2FLWkxmfi4vZa4MZUeABKyRM2UvuzE9bSxWaYsw1KEssoAxpBqxzxkUx6j64SCx",
+          "3hiobzpXQzetoQqZWNGz3iygaA4W64UdkkP6GZwmvLTddLFCVe4m2PT57umb4u7NonzjRd2Mpe71ygTK3jATb9Sm",
+          "3a7hGskWPXW1f3Rwrv7DLi1V1yqPwWVBma43XjC2B7eNdRJqt3ewkYBLLMUCxNHu2CVcm7DprkBZkQMqwb5g4jvv",
+          "5LJMP2Kdys36RvWgfk27A5TExNuQgXxczDuVE39SaCB839uQR7PM6mLdRi5UQbmoqxwqE41KEA2q71F7gcKWsnW2"
+        ]
+      },
+      "helius_used": false
     }
   ],
   "limitations": [
